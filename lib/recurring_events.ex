@@ -1,0 +1,2 @@
+defmodule RecurringEvents do
+end
