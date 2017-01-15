@@ -44,7 +44,12 @@ defmodule RecurringEvents.Monthly do
     end)
   end
 
-  defp get_stop_date(%{until: until}, to_date) when until < to_date, do: until
+  defp get_stop_date(%{until: until}, to_date) do
+    case Date.compare(until, to_date) do
+      :lt -> until
+      _ -> to_date
+    end
+  end
   defp get_stop_date(%{}, to_date), do: to_date
 
   defp get_interval(%{interval: interval}), do: interval
