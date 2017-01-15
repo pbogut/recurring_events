@@ -37,4 +37,14 @@ defmodule RecurringEvents.DateTest do
       Date.shift_date(@date, -15, :months)
   end
 
+  test "can shift date by N years" do
+    assert %{@date | year: 2018} ==
+      Date.shift_date(@date, 1, :years)
+    assert %{@date | year: 2019} ==
+      Date.shift_date(@date, 2, :years)
+    assert %{@date | year: 2012} ==
+      Date.shift_date(@date, -5, :years)
+    assert %{@date | year: 2032} ==
+      Date.shift_date(@date, 15, :years)
+  end
 end

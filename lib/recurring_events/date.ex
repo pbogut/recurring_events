@@ -1,8 +1,8 @@
 defmodule RecurringEvents.Date do
 
-  def shift_date(%{year: year, month: month, day: day} = date, count, :days) do
+  def shift_date(%{year: year, month: month, day: day} = date, count, period) do
     {new_year, new_month, new_day} =
-      shift_date({year, month, day}, count, :days)
+      shift_date({year, month, day}, count, period)
     %{date | year: new_year, month: new_month, day: new_day}
   end
 
@@ -11,12 +11,6 @@ defmodule RecurringEvents.Date do
       |> :calendar.date_to_gregorian_days
       |> Kernel.+(count)
       |> :calendar.gregorian_days_to_date
-  end
-
-  def shift_date(%{year: year, month: month, day: day} = date, count, :months) do
-    {new_year, new_month, new_day} =
-      shift_date({year, month, day}, count, :months)
-    %{date | year: new_year, month: new_month, day: new_day}
   end
 
   def shift_date({year, month, day}, count, :months) do
@@ -29,5 +23,9 @@ defmodule RecurringEvents.Date do
     new_day = min(day, last_day)
 
     {new_year, new_month, new_day}
+  end
+
+  def shift_date({year, month, day}, count, :years) do
+    {year + count, month, day}
   end
 end
