@@ -16,23 +16,23 @@ defmodule RecurringEvents.YearlyTest do
   test "for until ~N[2018-11-01 00:00:00] it should return 2 events" do
     until = ~N[2018-11-01 00:00:00]
     {:ok, events} = Yearly.unfold(@date, @valid_rrule |> Map.put(:until, until), @range)
-    assert Enum.count(events) == 2
+    assert 2 == Enum.count(events)
     assert [@date, %{@date | year: 2018}] == events
   end
 
   test "with no count, until and interval it should return 10 events (1 for each year)" do
     {:ok, events} = Yearly.unfold(@date, @valid_rrule, @range)
-    assert Enum.count(events) == 10
+    assert 10 == Enum.count(events)
   end
 
   test "for count 5 it should return 5 events" do
     {:ok, events} = Yearly.unfold(@date, @valid_rrule |> Map.put(:count, 5), @range)
-    assert Enum.count(events) == 5
+    assert 5 == Enum.count(events)
   end
 
   test "for interval 5 it should return 2 events" do
     {:ok, events} = Yearly.unfold(@date, @valid_rrule |> Map.put(:interval, 5), @range)
-    assert Enum.count(events) == 2
+    assert 2 == Enum.count(events)
     assert [@date, %{@date | year: 2022}] == events
   end
 end
