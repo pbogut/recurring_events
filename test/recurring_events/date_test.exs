@@ -14,4 +14,27 @@ defmodule RecurringEvents.DateTest do
     assert ~N[2018-01-30 10:00:00] ==
       Date.shift_date(@date, 365, :days)
   end
+
+  test "can shift date by N months" do
+    assert ~N[2017-02-28 10:00:00] ==
+      Date.shift_date(@date, 1, :months)
+    assert ~N[2017-03-30 10:00:00] ==
+      Date.shift_date(@date, 2, :months)
+    assert ~N[2017-06-30 10:00:00] ==
+      Date.shift_date(@date, 5, :months)
+    assert ~N[2018-04-30 10:00:00] ==
+      Date.shift_date(@date, 15, :months)
+  end
+
+  test "can shift date by -N months" do
+    assert ~N[2016-12-30 10:00:00] ==
+      Date.shift_date(@date, -1, :months)
+    assert ~N[2016-11-30 10:00:00] ==
+      Date.shift_date(@date, -2, :months)
+    assert ~N[2016-08-30 10:00:00] ==
+      Date.shift_date(@date, -5, :months)
+    assert ~N[2015-10-30 10:00:00] ==
+      Date.shift_date(@date, -15, :months)
+  end
+
 end
