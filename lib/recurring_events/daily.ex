@@ -34,10 +34,9 @@ defmodule RecurringEvents.Daily do
   end
 
   defp get_stop_date(%{until: until}, to_date) do
-    if :lt == Date.compare(until, to_date) do
-      until
-    else
-      to_date
+    case Date.compare(until, to_date) do
+      :lt -> until
+      _ -> to_date
     end
   end
   defp get_stop_date(%{}, to_date), do: to_date
