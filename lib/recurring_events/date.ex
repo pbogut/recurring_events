@@ -28,4 +28,20 @@ defmodule RecurringEvents.Date do
   def shift_date({year, month, day}, count, :years) do
     {year + count, month, day}
   end
+
+  def compare(%{year: y1, month: m1, day: d1},
+              %{year: y2, month: m2, day: d2}) do
+    compare({y1, m1, d1}, {y2, m2, d2})
+  end
+
+  def compare({y1, m1, d1}, {y2, m2, d2}) do
+    cond do
+      y1 == y2 and m1 == m2 and d1 == d2
+        -> :eq
+      y1 > y2 or (y1 == y2 and m1 > m2) or (y1 == y2 and m1 == m2 and d1 > d2)
+        -> :gt
+      true
+        -> :lt
+    end
+  end
 end

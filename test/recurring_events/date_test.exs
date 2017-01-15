@@ -47,4 +47,10 @@ defmodule RecurringEvents.DateTest do
     assert %{@date | year: 2032} ==
       Date.shift_date(@date, 15, :years)
   end
+
+  test "can compare two dates" do
+    assert :eq == Date.compare(@date, @date)
+    assert :gt == Date.compare({2018,02,01}, {2018,01,31})
+    assert :lt == Date.compare({2018,01,01}, {2018,01,31})
+  end
 end
