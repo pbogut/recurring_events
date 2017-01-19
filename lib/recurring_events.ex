@@ -4,7 +4,7 @@ defmodule RecurringEvents do
 
 
   def unfold(_date, %{count: _, until: _}, _range) do
-    {:error, "Can have eathier, count or until"}
+    {:error, "Can have either, count or until"}
   end
   def unfold(date, %{freq: freq} = params, range) when is_freq_valid(freq) do
     get_freq_module(freq).unfold(date, params, range)
