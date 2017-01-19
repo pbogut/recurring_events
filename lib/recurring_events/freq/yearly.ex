@@ -1,36 +1,35 @@
-defmodule RecurringEvents.Weekly do
+defmodule RecurringEvents.Freq.Yearly do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :weekly} = params, range) do
+  def unfold(date, %{freq: :yearly} = params, range) do
     {:ok, do_unfold(date, params, range)}
   end
 
-  def unfold!(date, %{freq: :weekly} = params, range) do
+  def unfold!(date, %{freq: :yearly} = params, range) do
     do_unfold(date, params, range)
   end
 
   defp do_unfold(date, %{} = params, {from_date, to_date}) do
-    stop_date = get_stop_date(params, to_date)
+    %{year: stop_year} = get_stop_date(params, to_date)
+    year = date.year
     count = get_count(params)
     interval = get_interval(params)
 
-    get_weeks_stream(date, interval)
-    |> Enum.reduce_while([], fn date, acc ->
-      if Enum.count(acc) == count or :gt == Date.compare(date, stop_date) do
+    get_years(year, stop_year, interval)
+    |> Enum.reduce_while([], fn year, acc ->
+      if Enum.count(acc) == count do
         {:halt, acc}
       else
-        {:cont, acc ++ [date]}
+        {:cont, acc ++ [%{date | year: year}]}
       end
     end)
-    |> Enum.drop_while(fn date ->
-      date < from_date
-    end)
+    |> Enum.drop_while(fn date -> date.year < from_date.year end)
   end
 
-  defp get_weeks_stream(date, step) do
-    Stream.iterate(date, fn next_date ->
-      Date.shift_date(next_date, step * 7, :days)
-    end)
+  defp get_years(start, stop, step) do
+    for year <- start..stop,
+      rem(year - start, step) == 0,
+      do: year
   end
 
   defp get_stop_date(%{until: until}, to_date) do

@@ -1,4 +1,4 @@
-defmodule RecurringEvents.Monthly do
+defmodule RecurringEvents.Freq.Monthly do
   alias RecurringEvents.Date
 
   def unfold(date, %{freq: :monthly} = params, range) do

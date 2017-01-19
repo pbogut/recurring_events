@@ -1,8 +1,8 @@
-defmodule RecurringEvents.WeeklyTest do
+defmodule RecurringEvents.Freq.WeeklyTest do
   use ExUnit.Case
-  doctest RecurringEvents
+  doctest RecurringEvents.Freq.Weekly
 
-  alias RecurringEvents.Weekly
+  alias RecurringEvents.Freq.Weekly
 
   @date ~N[2017-12-28 10:00:00]
   @range {~N[2017-12-28 00:00:00], ~N[2018-02-01 23:59:59]}

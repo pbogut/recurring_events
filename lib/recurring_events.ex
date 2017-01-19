@@ -1,5 +1,5 @@
 defmodule RecurringEvents do
-  alias RecurringEvents.{Yearly, Monthly, Weekly, Daily}
+  alias RecurringEvents.Freq.{Yearly, Monthly, Weekly, Daily}
   use RecurringEvents.Guards
 
 
