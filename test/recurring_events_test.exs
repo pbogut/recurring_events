@@ -40,4 +40,9 @@ defmodule RecurringEventsTest do
       RecurringEvents.unfold(@date, %{freq: :daily}, @range_3m)
     assert 90 = Enum.count(events)
   end
+  test "can handle weekly frequency" do
+    assert {:ok, events}  =
+      RecurringEvents.unfold(@date, %{freq: :weekly}, @range_3m)
+    assert 13 = Enum.count(events)
+  end
 end

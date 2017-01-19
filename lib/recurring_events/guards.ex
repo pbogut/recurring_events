@@ -10,6 +10,7 @@ defmodule RecurringEvents.Guards do
     quote do
       unquote(freq) == :yearly or
       unquote(freq) == :monthly or
+      unquote(freq) == :weekly or
       unquote(freq) == :daily
     end
   end

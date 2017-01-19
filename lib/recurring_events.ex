@@ -1,5 +1,5 @@
 defmodule RecurringEvents do
-  alias RecurringEvents.{Yearly, Monthly, Daily}
+  alias RecurringEvents.{Yearly, Monthly, Weekly, Daily}
   use RecurringEvents.Guards
 
 
@@ -15,6 +15,7 @@ defmodule RecurringEvents do
 
   defp get_freq_module(:yearly), do: Yearly
   defp get_freq_module(:monthly), do: Monthly
+  defp get_freq_module(:weekly), do: Weekly
   defp get_freq_module(:daily), do: Daily
 
 end
