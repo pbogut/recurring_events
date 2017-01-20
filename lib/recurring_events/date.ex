@@ -1,5 +1,15 @@
 defmodule RecurringEvents.Date do
 
+  @week_days [
+    :monday,
+    :tuesday,
+    :wednesday,
+    :thursday,
+    :friday,
+    :saturday,
+    :sunday
+  ]
+
   def shift_date(%{year: year, month: month, day: day} = date, count, period) do
     {new_year, new_month, new_day} =
       shift_date({year, month, day}, count, period)
@@ -27,6 +37,14 @@ defmodule RecurringEvents.Date do
 
   def shift_date({year, month, day}, count, :years) do
     {year + count, month, day}
+  end
+
+  def week_day(%{year: year, month: month, day: day}) do
+    week_day({year, month, day})
+  end
+
+  def week_day({_year, _month, _day} = date) do
+    @week_days |> Enum.at(:calendar.day_of_the_week(date) - 1)
   end
 
   def compare(%{year: y1, month: m1, day: d1},

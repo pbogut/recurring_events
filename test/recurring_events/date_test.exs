@@ -48,6 +48,16 @@ defmodule RecurringEvents.DateTest do
       Date.shift_date(@date, 15, :years)
   end
 
+  test "can return day of the week" do
+    assert :monday == Date.week_day(~D[2017-01-16])
+    assert :tuesday == Date.week_day(~D[2017-01-17])
+    assert :wednesday == Date.week_day(~D[2017-01-18])
+    assert :thursday == Date.week_day({2017, 01, 19})
+    assert :friday == Date.week_day(~D[2017-01-20])
+    assert :saturday == Date.week_day(~D[2017-01-21])
+    assert :sunday == Date.week_day({2017, 01, 22})
+  end
+
   test "can compare two dates" do
     assert :eq == Date.compare(@date, @date)
     assert :gt == Date.compare({2018,02,01}, {2018,01,31})
