@@ -39,6 +39,14 @@ defmodule RecurringEvents.Date do
     {year + count, month, day}
   end
 
+  def last_day_of_the_month(%{year: year, month: month}) do
+    :calendar.last_day_of_the_month(year, month)
+  end
+
+  def last_day_of_the_month({year, month, _day}) do
+    :calendar.last_day_of_the_month(year, month)
+  end
+
   def week_day(%{year: year, month: month, day: day}) do
     week_day({year, month, day})
   end

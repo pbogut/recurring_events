@@ -63,4 +63,11 @@ defmodule RecurringEvents.DateTest do
     assert :gt == Date.compare({2018,02,01}, {2018,01,31})
     assert :lt == Date.compare({2018,01,01}, {2018,01,31})
   end
+
+  test "can return last day of the month" do
+    assert 29 == Date.last_day_of_the_month(~D[2020-02-01])
+    assert 31 == Date.last_day_of_the_month(~D[2018-08-21])
+    assert 28 == Date.last_day_of_the_month(~D[2018-02-11])
+  end
+
 end
