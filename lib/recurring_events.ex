@@ -7,7 +7,8 @@ defmodule RecurringEvents do
     {:error, "Can have either, count or until"}
   end
   def unfold(date, %{freq: freq} = params, range) when is_freq_valid(freq) do
-    get_freq_module(freq).unfold(date, params, range)
+    {:ok, dates} = get_freq_module(freq).unfold(date, params, range)
+    {:ok, RecurringEvents.ByMonth.unfold(dates, params, range)}
   end
   def unfold(_date, %{freq: _}, _range), do: {:error, "Frequency is invalid"}
   def unfold(_date, _rrule, _range), do: {:error, "Frequency is missing"}

@@ -23,7 +23,7 @@ defmodule RecurringEvents.Freq.Daily do
       end
     end)
     |> Enum.drop_while(fn date ->
-      date < from_date
+      Date.compare(date, from_date) == :lt
     end)
   end
 
