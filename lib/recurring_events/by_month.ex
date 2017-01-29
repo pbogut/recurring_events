@@ -2,38 +2,36 @@ defmodule RecurringEvents.ByMonth do
   use RecurringEvents.Guards
   alias RecurringEvents.Date
 
-  def unfold(dates, %{by_month: month} = params, range)
+  def unfold(date, %{by_month: month} = params, range)
   when is_integer(month) do
-    unfold(dates, %{params | by_month: [month]}, range)
+    unfold(date, %{params | by_month: [month]}, range)
   end
 
-  def unfold(dates, %{by_month: _months, freq: :yearly} = params, _range) do
-    inflate(dates, params)
+  def unfold(date, %{by_month: _months, freq: :yearly} = params, _range) do
+    inflate(date, params)
   end
 
-  def unfold(dates, %{by_month: _months, freq: freq} = params, _range)
+  def unfold(date, %{by_month: _months, freq: freq} = params, _range)
   when is_freq_valid(freq) do
-    filter(dates, params)
+    filter(date, params)
   end
 
-  def unfold(dates, %{}, _range) do
-    dates
+  def unfold(date, %{}, _range) do
+    [date]
   end
 
-  defp filter(dates, %{by_month: months}) do
-    Enum.filter(dates, fn date ->
-      Enum.any?(months, fn month ->
-        month == date.month
-      end)
-    end)
+  defp filter(date, %{by_month: months}) do
+    if Enum.any?(months, fn month -> month == date.month end) do
+      [date]
+    else
+      []
+    end
   end
 
-  defp inflate(dates, %{by_month: months}) do
-    Enum.flat_map(dates, fn date ->
-      Enum.map(months, fn month ->
-        day = Date.last_day_of_the_month(%{date | month: month})
-        %{date | month: month, day: min(day, date.day)}
-      end)
+  defp inflate(date, %{by_month: months}) do
+    Enum.map(months, fn month ->
+      day = Date.last_day_of_the_month(%{date | month: month})
+      %{date | month: month, day: min(day, date.day)}
     end)
   end
 end

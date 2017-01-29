@@ -110,7 +110,7 @@ defmodule RecurringEvents.IcalRrulTest do
       {2000, 1, Enum.to_list(1..31)},
     ])
 
-    assert expect == result
+    assert expect == result |> Enum.take(expect |> Enum.count)
   end
 
   @doc """
