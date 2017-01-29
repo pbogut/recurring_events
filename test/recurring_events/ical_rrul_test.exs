@@ -1,6 +1,6 @@
 defmodule RecurringEvents.IcalRrulTest do
   use ExUnit.Case, async: true
-  alias RecurringEvents.Freq.{Daily, Weekly, Monthly, Yearly}
+  # alias RecurringEvents.Freq.{Daily, Weekly, Monthly, Yearly}
 
   @range {~D[1997-09-02], ~D[2027-09-02]}
 
@@ -17,7 +17,7 @@ defmodule RecurringEvents.IcalRrulTest do
     |> RecurringEvents.unfold(%{freq: :daily, count: 10}, @range)
 
     assert date_expand({1997, 09, Enum.to_list(2..11)})
-      == result
+      == result |> Enum.take(999)
   end
 
   @doc """
@@ -39,7 +39,7 @@ defmodule RecurringEvents.IcalRrulTest do
              {1997, 11, Enum.to_list(1..30)},
              {1997, 12, Enum.to_list(1..23)},
              {1997, 12, 24} # time is not supported yet, so include last
-           ]) == result
+           ]) == result |> Enum.take(999)
   end
 
   @doc """
@@ -83,7 +83,7 @@ defmodule RecurringEvents.IcalRrulTest do
       {1997, 10, [2,12]},
     ])
 
-    assert expect == result
+    assert expect == result |> Enum.take(999)
   end
 
   @doc """
