@@ -1,59 +1,51 @@
 defmodule RecurringEvents.Freq.Monthly do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :monthly} = params, range) do
-    {:ok, do_unfold(date, params, range)}
+  def unfold(date, %{freq: :monthly} = params) do
+    {:ok, do_unfold(date, params)}
   end
 
-  def unfold!(date, %{freq: :monthly} = params, range) do
-    do_unfold(date, params, range)
+  def unfold!(date, %{freq: :monthly} = params) do
+    do_unfold(date, params)
   end
 
-  defp do_unfold(date, %{} = params, {from_date, to_date}) do
-    %{year: stop_year, month: stop_month} = get_stop_date(params, to_date)
-    max = {stop_year, stop_month}
-    year = date.year
-    month = date.month
+  defp do_unfold(date, %{} = params) do
+    step = get_step(params)
     count = get_count(params)
-    interval = get_interval(params)
+    until_date = until_date(params)
 
-    get_months_stream({year, month}, interval)
-    |> Enum.reduce_while([], fn {year, month} = cur, acc ->
-      if should_stop_generating(acc, count, cur, max) do
-        {:halt, acc}
-      else
-        {:cont, acc ++ [%{date | year: year, month: month}]}
-      end
-    end)
-    |> Enum.drop_while(fn date ->
-      date.year < from_date.year or
-      (date.year == from_date.year and date.month < from_date.month)
-    end)
+    Stream.resource(
+      fn -> {date, 0} end,
+      fn {date, iteration} ->
+        {[next_date], _} = next_result = next_iteration(date, step, iteration)
+        cond do
+          iteration == count -> {:halt, nil}
+          until_reached(next_date, until_date) -> {:halt, nil}
+          true -> next_result
+        end
+      end,
+      fn _ -> nil end)
   end
 
-  defp should_stop_generating(list, count, {year, month}, {stop_y, stop_m}) do
-    Enum.count(list) == count or
-      year > stop_y or
-      (year == stop_y and month > stop_m)
+  defp next_iteration(date, step, iteration) do
+    next_date = Date.shift_date(date, step * iteration, :months)
+    acc = {date, iteration + 1}
+    {[next_date], acc}
   end
 
-  defp get_months_stream({start_y, start_m}, step) do
-    Stream.iterate({start_y, start_m}, fn {year, month} ->
-      {y, m, _d} = Date.shift_date({year, month, 1}, step, :months)
-      {y, m}
-    end)
+  defp until_reached(_date, :forever), do: false
+  defp until_reached(date, until_date) do
+    Date.compare(date, until_date) == :gt
   end
 
-  defp get_stop_date(%{until: until}, to_date) do
-    case Date.compare(until, to_date) do
-      :lt -> until
-      _ -> to_date
-    end
+  defp until_date(%{until: until_date}) do
+    last_day = Date.last_day_of_the_month(until_date)
+    %{until_date | day: last_day}
   end
-  defp get_stop_date(%{}, to_date), do: to_date
+  defp until_date(%{}), do: :forever
 
-  defp get_interval(%{interval: interval}), do: interval
-  defp get_interval(%{}), do: 1
+  defp get_step(%{interval: interval}), do: interval
+  defp get_step(%{}), do: 1
 
   defp get_count(%{count: count}), do: count
   defp get_count(%{}), do: :infinity
