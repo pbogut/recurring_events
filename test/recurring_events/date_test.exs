@@ -15,6 +15,15 @@ defmodule RecurringEvents.DateTest do
       Date.shift_date(@date, 365, :days)
   end
 
+  test "can shift date by N weeks" do
+    assert ~N[2017-02-06 10:00:00] ==
+      Date.shift_date(@date, 1, :weeks)
+    assert ~N[2017-02-13 10:00:00] ==
+      Date.shift_date(@date, 2, :weeks)
+    assert ~N[2017-02-20 10:00:00] ==
+      Date.shift_date(@date, 3, :weeks)
+  end
+
   test "can shift date by N months" do
     assert ~N[2017-02-28 10:00:00] ==
       Date.shift_date(@date, 1, :months)

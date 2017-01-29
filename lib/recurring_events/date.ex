@@ -23,6 +23,10 @@ defmodule RecurringEvents.Date do
       |> :calendar.gregorian_days_to_date
   end
 
+  def shift_date({_year, _month, _day} = date, count, :weeks) do
+    shift_date(date, count * 7, :days)
+  end
+
   def shift_date({year, month, day}, count, :months) do
     months = (year * 12) + (month - 1) + count
 
