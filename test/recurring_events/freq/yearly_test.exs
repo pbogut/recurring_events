@@ -4,7 +4,7 @@ defmodule RecurringEvents.Freq.YearlyTest do
 
   alias RecurringEvents.Freq.Yearly
 
-  @date ~N[2017-01-01 10:00:00]
+  @date ~D[2017-01-01]
   @valid_rrule %{freq: :yearly}
 
   test "for count 1 should return only one event" do
@@ -12,8 +12,8 @@ defmodule RecurringEvents.Freq.YearlyTest do
     assert [@date] == events |> Enum.take(999)
   end
 
-  test "for until ~N[2018-11-01 00:00:00] it should return 2 events" do
-    until = ~N[2018-11-01 00:00:00]
+  test "for until ~D[2018-11-01] it should return 2 events" do
+    until = ~D[2018-11-01]
     events = Yearly.unfold!(@date, @valid_rrule |> Map.put(:until, until))
     assert 2 == Enum.count(events)
     assert [@date, %{@date | year: 2018}] == events |> Enum.take(999)
