@@ -1,47 +1,43 @@
 defmodule RecurringEvents.Freq.Yearly do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :yearly} = params, range) do
-    {:ok, do_unfold(date, params, range)}
+  def unfold(date, %{freq: :yearly} = params) do
+    {:ok, do_unfold(date, params)}
   end
 
-  def unfold!(date, %{freq: :yearly} = params, range) do
-    do_unfold(date, params, range)
+  def unfold!(date, %{freq: :yearly} = params) do
+    do_unfold(date, params)
   end
 
-  defp do_unfold(date, %{} = params, {from_date, to_date}) do
-    %{year: stop_year} = get_stop_date(params, to_date)
-    year = date.year
+  defp do_unfold(date, %{} = params) do
+    step = get_step(params)
     count = get_count(params)
-    interval = get_interval(params)
+    until_year = until_year(params)
 
-    get_years(year, stop_year, interval)
-    |> Enum.reduce_while([], fn year, acc ->
-      if Enum.count(acc) == count do
-        {:halt, acc}
-      else
-        {:cont, acc ++ [%{date | year: year}]}
-      end
-    end)
-    |> Enum.drop_while(fn date -> date.year < from_date.year end)
+    Stream.resource(
+      fn -> {date, 0} end,
+      fn {date, iteration} ->
+        {[next_date], _} = next_result = next_iteration(date, step, iteration)
+        cond do
+          iteration == count -> {:halt, nil}
+          next_date.year > until_year -> {:halt, nil}
+          true -> next_result
+        end
+      end,
+      fn _ -> nil end)
   end
 
-  defp get_years(start, stop, step) do
-    for year <- start..stop,
-      rem(year - start, step) == 0,
-      do: year
+  defp next_iteration(date, step, iteration) do
+    next_date = Date.shift_date(date, step * iteration, :years)
+    acc = {date, iteration + 1}
+    {[next_date], acc}
   end
 
-  defp get_stop_date(%{until: until}, to_date) do
-    case Date.compare(until, to_date) do
-      :lt -> until
-      _ -> to_date
-    end
-  end
-  defp get_stop_date(%{}, to_date), do: to_date
+  defp until_year(%{until: %{year: year}}), do: year
+  defp until_year(%{}), do: :forever
 
-  defp get_interval(%{interval: interval}), do: interval
-  defp get_interval(%{}), do: 1
+  defp get_step(%{interval: interval}), do: interval
+  defp get_step(%{}), do: 1
 
   defp get_count(%{count: count}), do: count
   defp get_count(%{}), do: :infinity
