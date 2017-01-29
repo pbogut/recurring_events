@@ -59,6 +59,24 @@ defmodule RecurringEvents.Date do
     @week_days |> Enum.at(:calendar.day_of_the_week(date) - 1)
   end
 
+  def shift_week_day(day, shift) do
+    day_no =
+      @week_days
+      |> Enum.find_index(fn d -> d == day end)
+      |> Kernel.+(shift)
+      |> rem(7)
+
+    Enum.at(@week_days, day_no)
+  end
+
+  def next_week_day(day) do
+    shift_week_day(day, 1)
+  end
+
+  def prev_week_day(day) do
+    shift_week_day(day, -1)
+  end
+
   def compare(%{year: y1, month: m1, day: d1},
               %{year: y2, month: m2, day: d2}) do
     compare({y1, m1, d1}, {y2, m2, d2})

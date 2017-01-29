@@ -79,4 +79,17 @@ defmodule RecurringEvents.DateTest do
     assert 28 == Date.last_day_of_the_month(~D[2018-02-11])
   end
 
+  test "can return next week day" do
+    assert :friday == Date.next_week_day(:thursday)
+    assert :monday == Date.next_week_day(:sunday)
+    assert :sunday == Date.next_week_day(:saturday)
+  end
+
+
+  test "can return previous day week day" do
+    assert :thursday == Date.prev_week_day(:friday)
+    assert :sunday == Date.prev_week_day(:monday)
+    assert :monday == Date.prev_week_day(:tuesday)
+  end
+
 end
