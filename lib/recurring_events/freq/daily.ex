@@ -1,48 +1,48 @@
 defmodule RecurringEvents.Freq.Daily do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :daily} = params, range) do
-    {:ok, do_unfold(date, params, range)}
+  def unfold(date, %{freq: :daily} = params) do
+    {:ok, do_unfold(date, params)}
   end
 
-  def unfold!(date, %{freq: :daily} = params, range) do
-    do_unfold(date, params, range)
+  def unfold!(date, %{freq: :daily} = params) do
+    do_unfold(date, params)
   end
 
-  defp do_unfold(date, %{} = params, {from_date, to_date}) do
-    stop_date = get_stop_date(params, to_date)
+  defp do_unfold(date, %{} = params) do
+    step = get_step(params)
     count = get_count(params)
-    interval = get_interval(params)
+    until_date = until_date(params)
 
-    get_days_stream(date, interval)
-    |> Enum.reduce_while([], fn date, acc ->
-      if Enum.count(acc) == count or :gt == Date.compare(date, stop_date) do
-        {:halt, acc}
-      else
-        {:cont, acc ++ [date]}
-      end
-    end)
-    |> Enum.drop_while(fn date ->
-      Date.compare(date, from_date) == :lt
-    end)
+    Stream.resource(
+      fn -> {date, 0} end,
+      fn {date, iteration} ->
+        {[next_date], _} = next_result = next_iteration(date, step, iteration)
+        cond do
+          iteration == count -> {:halt, nil}
+          until_reached(next_date, until_date) -> {:halt, nil}
+          true -> next_result
+        end
+      end,
+      fn _ -> nil end)
   end
 
-  defp get_days_stream(date, step) do
-    Stream.iterate(date, fn next_date ->
-      Date.shift_date(next_date, step, :days)
-    end)
+  defp next_iteration(date, step, iteration) do
+    next_date = Date.shift_date(date, step * iteration, :days)
+    acc = {date, iteration + 1}
+    {[next_date], acc}
   end
 
-  defp get_stop_date(%{until: until}, to_date) do
-    case Date.compare(until, to_date) do
-      :lt -> until
-      _ -> to_date
-    end
+  defp until_reached(_date, :forever), do: false
+  defp until_reached(date, until_date) do
+    Date.compare(date, until_date) == :gt
   end
-  defp get_stop_date(%{}, to_date), do: to_date
 
-  defp get_interval(%{interval: interval}), do: interval
-  defp get_interval(%{}), do: 1
+  defp until_date(%{until: until_date}), do: until_date
+  defp until_date(%{}), do: :forever
+
+  defp get_step(%{interval: interval}), do: interval
+  defp get_step(%{}), do: 1
 
   defp get_count(%{count: count}), do: count
   defp get_count(%{}), do: :infinity
