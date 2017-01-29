@@ -19,7 +19,7 @@ defmodule RecurringEvents.Freq.YearlyTest do
     assert [@date, %{@date | year: 2018}] == events |> Enum.take(999)
   end
 
-  test "with no count, until and interval it should steam forever" do
+  test "with no count, until and interval it should stream forever" do
     events = Yearly.unfold!(@date, @valid_rrule)
     assert 1 == Enum.count(events |> Enum.take(1))
     assert 16 == Enum.count(events |> Enum.take(16))
