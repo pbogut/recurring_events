@@ -270,6 +270,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1998 9:00 AM EST)January 2;February 6;March 6;April 3
         (1998 9:00 AM EDT)May 1;June 5
   """
+  @tag :pending
   test "Monthly on the 1st Friday for ten occurrences" do
   end
 
@@ -293,6 +294,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1998 9:00 AM EST)January 4,25;March 1,29
         (1998 9:00 AM EDT)May 3,31
   """
+  @tag :pending
   test "Monthly on the 1st Friday until December 24, 1997" do
   end
 
@@ -306,6 +308,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1997 9:00 AM EST)November 17;December 22
         (1998 9:00 AM EST)January 19;February 16
   """
+  @tag :pending
   test "Monthly on the second to last Monday of the month for 6 months" do
   end
 
@@ -320,6 +323,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1998 9:00 AM EST)January 29;February 26
     ...
   """
+  @tag :pending
   test "Monthly on the third to the last day of the month, forever" do
   end
 
@@ -333,6 +337,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1997 9:00 AM EST)November 2,15;December 2,15
         (1998 9:00 AM EST)January 2,15
   """
+  @tag :pending
   test "Monthly on the 2nd and 15th of the month for 10 occurrences" do
   end
 
@@ -345,7 +350,12 @@ defmodule RecurringEvents.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 30;October 1
         (1997 9:00 AM EST)October 31;November 1,30;December 1,31
         (1998 9:00 AM EST)January 1,31;February 1
+  """
+  @tag :pending
+  test "Monthly on the first and last day of the month for 10 occurrences" do
+  end
 
+  @doc """
   Every 18 months on the 10th thru 15th of the month for 10
   occurrences:
 
@@ -356,7 +366,8 @@ defmodule RecurringEvents.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 10,11,12,13,14,15
         (1999 9:00 AM EST)March 10,11,12,13
   """
-  test "Monthly on the first and last day of the month for 10 occurrences" do
+  @tag :pending
+  test "Every 18 months on the 10th thru 15th of the month for 10 occurrences" do
   end
 
   @doc """
@@ -370,6 +381,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1998 9:00 AM EST)January 6,13,20,27;March 3,10,17,24,31
     ...
   """
+  @tag :pending
   test "Every Tuesday, every other month" do
   end
 
@@ -439,6 +451,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (2003 9:00 AM EDT)April 10;July 19
         (2006 9:00 AM EST)January 1
   """
+  @tag :pending
   test "Every 3rd year on the 1st, 100th and 200th day for 10 occurrences" do
   end
 
@@ -454,6 +467,7 @@ defmodule RecurringEvents.IcalRrulTest do
     ...
 
   """
+  @tag :pending
   test "Every 20th Monday of the year, forever" do
   end
 
@@ -468,6 +482,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1999 9:00 AM EDT)May 17
     ...
   """
+  @tag :pending
   test "Monday of week number 20 (where the default start of the week is Monday), forever" do
   end
 
@@ -543,6 +558,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (2000 9:00 AM EDT)October 13
     ...
   """
+  @tag :pending
   test "Every Friday the 13th, forever" do
   end
 
@@ -559,6 +575,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1998 9:00 AM EDT)April 11;May 9;June 13...
     ...
   """
+  @tag :pending
   test "The first Saturday that follows the first Sunday of the month, forever" do
   end
 
@@ -575,6 +592,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (2004 9:00 AM EST)November 2
     ...
   """
+  @tag :pending
   test "Every four years, the first Tuesday after a Monday in November, forever (U.S. Presidential Election day)" do
   end
 
@@ -588,6 +606,7 @@ defmodule RecurringEvents.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 4;October 7
         (1997 9:00 AM EST)November 6
   """
+  @tag :pending
   test "The 3rd instance into the month of one of Tuesday, Wednesday or Thursday, for the next 3 months" do
   end
 
@@ -602,6 +621,7 @@ defmodule RecurringEvents.IcalRrulTest do
         (1998 9:00 AM EST)January 29;February 26;March 30
     ...
   """
+  @tag :pending
   test "The 2nd to last weekday of the month" do
   end
 
@@ -613,6 +633,7 @@ defmodule RecurringEvents.IcalRrulTest do
 
     ==> (September 2, 1997 EDT)09:00,12:00,15:00
   """
+  @tag :pending
   test "Every 3 hours from 9:00 AM to 5:00 PM on a specific day" do
   end
 
@@ -624,6 +645,7 @@ defmodule RecurringEvents.IcalRrulTest do
 
     ==> (September 2, 1997 EDT)09:00,09:15,09:30,09:45,10:00,10:15
   """
+  @tag :pending
   test "Every 15 minutes for 6 occurrences" do
   end
 
@@ -635,6 +657,7 @@ defmodule RecurringEvents.IcalRrulTest do
 
     ==> (September 2, 1997 EDT)09:00,10:30;12:00;13:30
   """
+  @tag :pending
   test "Every hour and a half for 4 occurrences" do
   end
 
@@ -652,6 +675,7 @@ defmodule RecurringEvents.IcalRrulTest do
                               ...16:00,16:20,16:40
     ...
   """
+  @tag :pending
   test "Every 20 minutes from 9:00 AM to 4:40 PM every day" do
   end
 
@@ -670,6 +694,7 @@ defmodule RecurringEvents.IcalRrulTest do
     RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU
     ==> (1997 EDT)August 5,17,19,31
   """
+  @tag :pending
   test "An example where the days generated makes a difference because of WKST" do
   end
 
