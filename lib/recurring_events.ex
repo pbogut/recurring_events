@@ -23,6 +23,9 @@ defmodule RecurringEvents do
     |> Enum.flat_map(fn date ->
       RecurringEvents.ByMonth.unfold(date, params, range)
     end)
+    |> Enum.flat_map(fn date ->
+      RecurringEvents.ByDay.unfold(date, params, range)
+    end)
     |> drop_before(date)
     |> prepend(date)
     |> drop_after(until)
