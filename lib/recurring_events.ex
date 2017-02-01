@@ -9,15 +9,45 @@ defmodule RecurringEvents do
   end
 
   def unfold(date, %{freq: freq} = params, range) when is_freq_valid(freq) do
-    until = get_until_date(params, range)
-    {:ok, dates} = get_freq_module(freq).unfold(date, Map.put(params, :until, until))
-    {:ok, Enum.flat_map(dates, fn date ->
-      RecurringEvents.ByMonth.unfold(date, params, range)
-    end)}
+    {:ok, unfold!(date, params, range)}
   end
 
   def unfold(_date, %{freq: _}, _range), do: {:error, "Frequency is invalid"}
   def unfold(_date, _rrule, _range), do: {:error, "Frequency is missing"}
+
+  def unfold!(date, %{freq: freq} = params, range) do
+    until = get_until_date(params, range)
+    count = get_count(params)
+    date
+    |> get_freq_module(freq).unfold!(Map.put(params, :until, until))
+    |> Enum.flat_map(fn date ->
+      RecurringEvents.ByMonth.unfold(date, params, range)
+    end)
+    |> drop_before(date)
+    |> prepend(date)
+    |> drop_after(until)
+    |> drop_after(count)
+  end
+
+  defp drop_after(list, :infinite), do: list
+  defp drop_after(list, count) when is_integer(count) do
+    Enum.take(list, count)
+  end
+  defp drop_after(list, date) do
+    Enum.take_while(list, fn date_ ->
+      Date.compare(date, date_) != :lt
+    end)
+  end
+
+  defp drop_before(list, date) do
+    Enum.drop_while(list, fn date_ ->
+      Date.compare(date, date_) != :lt
+    end)
+  end
+
+  defp prepend(list, element) do
+    [element | list]
+  end
 
   #
   # this one is slower then the normal one... needs rethink
@@ -35,6 +65,9 @@ defmodule RecurringEvents do
   #
   #   {:ok, result}
   # end
+
+  defp get_count(%{count: count}), do: count
+  defp get_count(%{}), do: :infinite
 
   defp get_until_date(%{until: until_date}, {_from, to_date}) do
     if Date.compare(until_date, to_date) == :gt do
