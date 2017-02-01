@@ -43,13 +43,13 @@ defmodule RecurringEvents.ByDay do
     end
   end
 
-  defp year_inflate(date, %{by_day: days} = params) do
+  defp year_inflate(date, %{by_day: days}) do
     year_start = %{date | day: 1, month: 1}
     year_end = %{date | day: 31, month: 12}
     inflate(year_start, year_end, days)
   end
 
-  defp month_inflate(date, %{by_day: days} = params) do
+  defp month_inflate(date, %{by_day: days}) do
     month_start = %{date | day: 1}
     month_end = %{date | day: Date.last_day_of_the_month(date)}
     inflate(month_start, month_end, days)
