@@ -29,7 +29,7 @@ defmodule RecurringEvents.ByMonth do
   end
 
   defp inflate(date, %{by_month: months}) do
-    Enum.map(months, fn month ->
+    Stream.map(months, fn month ->
       day = Date.last_day_of_the_month(%{date | month: month})
       %{date | month: month, day: min(day, date.day)}
     end)

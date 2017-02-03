@@ -35,8 +35,12 @@ defmodule RecurringEvents.ByMonthTest do
 
   test "can inflate months when freq: :yearly" do
     assert [~D[2017-02-20]] ==
-      ByMonth.unfold(@date, %{freq: :yearly, by_month: 2}, {})
+      @date
+      |> ByMonth.unfold(%{freq: :yearly, by_month: 2}, {})
+      |> Enum.take(999)
     assert [~D[2017-02-20], ~D[2017-05-20]] ==
-      ByMonth.unfold(@date, %{freq: :yearly, by_month: [2,5]}, {})
+      @date
+      |> ByMonth.unfold(%{freq: :yearly, by_month: [2,5]}, {})
+      |> Enum.take(999)
   end
 end

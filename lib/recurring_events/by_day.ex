@@ -32,7 +32,7 @@ defmodule RecurringEvents.ByDay do
   end
 
   defp filter(dates, params) when is_list(dates) do
-    Enum.flat_map(dates, &filter(&1, params))
+    Stream.flat_map(dates, &filter(&1, params))
   end
 
   defp filter(date, %{by_day: days}) do
@@ -69,7 +69,7 @@ defmodule RecurringEvents.ByDay do
   defp inflate(start_date, stop_date, days) do
     start_date
     |> RecurringEvents.Freq.Daily.unfold!(%{until: stop_date, freq: :daily})
-    |> Enum.filter(fn date ->
+    |> Stream.filter(fn date ->
       is_week_day_in(date, days)
     end)
   end
