@@ -2,8 +2,6 @@ defmodule RecurringEvents.IcalRrulTest do
   use ExUnit.Case, async: true
   # alias RecurringEvents.Freq.{Daily, Weekly, Monthly, Yearly}
 
-  @range {~D[1997-09-02], ~D[2027-09-02]}
-
   @doc """
     Daily for 10 occurrences
 
@@ -14,7 +12,7 @@ defmodule RecurringEvents.IcalRrulTest do
   """
   test "Daily for 10 occurrences" do
     {:ok, result} = ~D[1997-09-02]
-    |> RecurringEvents.unfold(%{freq: :daily, count: 10}, @range)
+    |> RecurringEvents.unfold(%{freq: :daily, count: 10})
 
     assert date_expand({1997, 09, Enum.to_list(2..11)})
       == result |> Enum.take(999)
@@ -31,7 +29,7 @@ defmodule RecurringEvents.IcalRrulTest do
   """
   test "Daily until December 24, 1997" do
     {:ok, result} = ~D[1997-09-02]
-    |> RecurringEvents.unfold(%{freq: :daily, until: ~D[1997-12-24]}, @range)
+    |> RecurringEvents.unfold(%{freq: :daily, until: ~D[1997-12-24]})
 
     assert date_expand([
              {1997, 09, Enum.to_list(2..30)},
@@ -54,7 +52,7 @@ defmodule RecurringEvents.IcalRrulTest do
   """
   test "Every other day - forever" do
     {:ok, result} = ~D[1997-09-02]
-    |> RecurringEvents.unfold(%{freq: :daily, interval: 2}, @range)
+    |> RecurringEvents.unfold(%{freq: :daily, interval: 2})
 
     expect = date_expand([
       {1997, 09, [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30]},
@@ -76,7 +74,7 @@ defmodule RecurringEvents.IcalRrulTest do
   """
   test "Every 10 days, 5 occurrences" do
     {:ok, result} = ~D[1997-09-02]
-    |> RecurringEvents.unfold(%{freq: :daily, interval: 10, count: 5}, @range)
+    |> RecurringEvents.unfold(%{freq: :daily, interval: 10, count: 5})
 
     expect = date_expand([
       {1997, 09, [2,12,22]},
@@ -102,7 +100,7 @@ defmodule RecurringEvents.IcalRrulTest do
   test "Everyday in January, for 3 years" do
     {:ok, result} = ~D[1998-01-01]
     |> RecurringEvents.unfold(%{freq: :daily, until: ~D[2000-01-31],
-                                by_month: 1}, @range)
+                                by_month: 1})
 
     expect = date_expand([
       {1998, 1, Enum.to_list(1..31)},
@@ -124,7 +122,7 @@ defmodule RecurringEvents.IcalRrulTest do
   """
   test "Weekly for 10 occurrences" do
     {:ok, result} = ~D[1997-09-02]
-    |> RecurringEvents.unfold(%{freq: :weekly, count: 10}, @range)
+    |> RecurringEvents.unfold(%{freq: :weekly, count: 10})
 
     expect = date_expand([
       {1997, 9, [2,9,16,23,30]},
@@ -147,7 +145,7 @@ defmodule RecurringEvents.IcalRrulTest do
   """
   test "Weekly until December 24, 1997" do
     {:ok, result} = ~D[1997-09-02]
-    |> RecurringEvents.unfold(%{freq: :weekly, until: ~D[1997-12-24]}, @range)
+    |> RecurringEvents.unfold(%{freq: :weekly, until: ~D[1997-12-24]})
 
     expect = date_expand([
       {1997, 9, [2,9,16,23,30]},
@@ -173,7 +171,7 @@ defmodule RecurringEvents.IcalRrulTest do
   test "Every other week - forever" do
     {:ok, result} = ~D[1997-09-02]
     |> RecurringEvents.unfold(%{freq: :weekly, interval: 2,
-                                week_start: :sunday}, @range)
+                                week_start: :sunday})
 
     expect = date_expand([
       {1997, 9, [2,16,30]},
@@ -199,7 +197,7 @@ defmodule RecurringEvents.IcalRrulTest do
   test "Weekly on Tuesday and Thursday for 5 weeks" do
     {:ok, result} = ~D[1997-09-02]
     |> RecurringEvents.unfold(%{freq: :weekly, count: 10, week_start: :sunday,
-                              by_day: [:tuesday, :thursday]}, @range)
+                              by_day: [:tuesday, :thursday]})
 
     expect = date_expand([
       {1997, 9, [2,4,9,11,16,18,23,25,30]},
@@ -225,7 +223,7 @@ defmodule RecurringEvents.IcalRrulTest do
     {:ok, result} = ~D[1997-09-02]
     |> RecurringEvents.unfold(%{freq: :weekly, interval: 2, week_start: :sunday,
                               by_day: [:monday, :wednesday, :friday],
-                              until: ~D[1997-12-24]}, @range)
+                              until: ~D[1997-12-24]})
 
     expect = date_expand([
       {1997, 9, [2,3,5,15,17,19,29]},
@@ -249,7 +247,7 @@ defmodule RecurringEvents.IcalRrulTest do
   test "Every other week on Tuesday and Thursday, for 8 occurrences" do
     {:ok, result} = ~D[1997-09-02]
     |> RecurringEvents.unfold(%{freq: :weekly, interval: 2, week_start: :sunday,
-                              count: 8, by_day: [:tuesday, :thursday]}, @range)
+                              count: 8, by_day: [:tuesday, :thursday]})
 
     expect = date_expand([
       {1997, 9, [2,4,16,18,30]},
@@ -401,7 +399,7 @@ defmodule RecurringEvents.IcalRrulTest do
   test "Yearly in June and July for 10 occurrences" do
     {:ok, result} = ~D[1997-06-10]
 
-    |> RecurringEvents.unfold(%{freq: :yearly, count: 10, by_month: [6, 7]}, @range)
+    |> RecurringEvents.unfold(%{freq: :yearly, count: 10, by_month: [6, 7]})
 
     expect = date_expand([
       {1997..2001 |> Enum.to_list, [6, 7] |> Enum.to_list, 10},
@@ -425,7 +423,7 @@ defmodule RecurringEvents.IcalRrulTest do
     {:ok, result} = ~D[1997-03-10]
 
     |> RecurringEvents.unfold(%{freq: :yearly, count: 10, by_month: [1, 2, 3],
-                                interval: 2}, @range)
+                                interval: 2})
 
     expect = date_expand([
       {1997, 3, 10},
@@ -500,7 +498,7 @@ defmodule RecurringEvents.IcalRrulTest do
   test "Every Thursday in March, forever" do
     {:ok, result} = ~D[1997-03-13]
 
-    |> RecurringEvents.unfold(%{freq: :yearly, by_month: 3, by_day: :thursday}, @range)
+    |> RecurringEvents.unfold(%{freq: :yearly, by_month: 3, by_day: :thursday})
 
     expect = date_expand([
       {1997, 3, Enum.to_list([13,20,27])},
@@ -529,7 +527,7 @@ defmodule RecurringEvents.IcalRrulTest do
     {:ok, result} = ~D[1997-06-05]
 
     |> RecurringEvents.unfold(%{freq: :yearly, by_month: [6,7,8],
-                                by_day: :thursday}, @range)
+                                by_day: :thursday})
 
     expect = date_expand([
       {1997, 6, Enum.to_list([5,12,19,26])},

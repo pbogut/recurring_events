@@ -4,46 +4,51 @@ defmodule RecurringEventsTest do
 
   @date ~N[2017-01-01 10:00:00]
   @valid_rrule %{freq: :yearly}
-  @range_3y {~D[2017-01-01], ~D[2019-12-31]}
-  @range_3m {~D[2017-01-01], ~D[2017-03-31]}
 
   test "freq is required" do
     assert {:error, _} =
-      RecurringEvents.unfold(@date, %{}, @range_3y)
+      RecurringEvents.unfold(@date, %{})
   end
 
   test "can have eathier until or count" do
     assert {:error, _} =
       RecurringEvents.unfold(@date,
-                             Map.merge(@valid_rrule, %{count: 1, until: 2}),
-                             @range_3y)
+                             Map.merge(@valid_rrule, %{count: 1, until: 2}))
     assert {:ok, _} =
-      RecurringEvents.unfold(@date, Map.put(@valid_rrule, :until, @date), @range_3y)
+      RecurringEvents.unfold(@date, Map.put(@valid_rrule, :until, @date))
     assert {:ok, _} =
-      RecurringEvents.unfold(@date, Map.put(@valid_rrule, :count, 1), @range_3y)
+      RecurringEvents.unfold(@date, Map.put(@valid_rrule, :count, 1))
   end
 
   test "can handle yearly frequency" do
-    assert {:ok, events}  =
-      RecurringEvents.unfold(@date, %{freq: :yearly}, @range_3y)
+    events  =
+      @date
+      |> RecurringEvents.unfold!(%{freq: :yearly})
+      |> Enum.take(3)
     assert 3 = Enum.count(events)
   end
 
   test "can handle monthly frequency" do
-    assert {:ok, events}  =
-      RecurringEvents.unfold(@date, %{freq: :monthly}, @range_3y)
+    events =
+      @date
+      |> RecurringEvents.unfold!(%{freq: :monthly})
+      |> Enum.take(36)
     assert 36 = Enum.count(events)
   end
 
   test "can handle daily frequency" do
-    assert {:ok, events}  =
-      RecurringEvents.unfold(@date, %{freq: :daily}, @range_3m)
+    events =
+      @date
+      |> RecurringEvents.unfold!(%{freq: :daily})
+      |> Enum.take(90)
     assert 90 = Enum.count(events)
   end
 
   test "can handle weekly frequency" do
-    assert {:ok, events}  =
-      RecurringEvents.unfold(@date, %{freq: :weekly}, @range_3m)
+    events =
+      @date
+      |> RecurringEvents.unfold!(%{freq: :weekly})
+      |> Enum.take(13)
     assert 13 = Enum.count(events)
   end
 end

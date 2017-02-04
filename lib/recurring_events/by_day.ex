@@ -2,32 +2,32 @@ defmodule RecurringEvents.ByDay do
   use RecurringEvents.Guards
   alias RecurringEvents.Date
 
-  def unfold(date, %{by_day: day} = params, range)
+  def unfold(date, %{by_day: day} = params)
   when is_atom(day) do
-    unfold(date, %{params | by_day: [day]}, range)
+    unfold(date, %{params | by_day: [day]})
   end
 
-  def unfold(date, %{by_day: _days, by_month: _} = params, _range) do
+  def unfold(date, %{by_day: _days, by_month: _} = params) do
     month_inflate(date, params)
   end
 
-  def unfold(date, %{by_day: _days, freq: :daily} = params, _range) do
+  def unfold(date, %{by_day: _days, freq: :daily} = params) do
     filter(date, params)
   end
 
-  def unfold(date, %{by_day: _days, freq: :weekly} = params, _range) do
+  def unfold(date, %{by_day: _days, freq: :weekly} = params) do
     week_inflate(date, params)
   end
 
-  def unfold(date, %{by_day: _days, freq: :monthly} = params, _range) do
+  def unfold(date, %{by_day: _days, freq: :monthly} = params) do
     month_inflate(date, params)
   end
 
-  def unfold(date, %{by_day: _days, freq: :yearly} = params, _range) do
+  def unfold(date, %{by_day: _days, freq: :yearly} = params) do
     year_inflate(date, params)
   end
 
-  def unfold(date, %{}, _range) do
+  def unfold(date, %{}) do
     [date]
   end
 

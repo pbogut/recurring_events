@@ -2,21 +2,21 @@ defmodule RecurringEvents.ByMonth do
   use RecurringEvents.Guards
   alias RecurringEvents.Date
 
-  def unfold(date, %{by_month: month} = params, range)
+  def unfold(date, %{by_month: month} = params)
   when is_integer(month) do
-    unfold(date, %{params | by_month: [month]}, range)
+    unfold(date, %{params | by_month: [month]})
   end
 
-  def unfold(date, %{by_month: _months, freq: :yearly} = params, _range) do
+  def unfold(date, %{by_month: _months, freq: :yearly} = params) do
     inflate(date, params)
   end
 
-  def unfold(date, %{by_month: _months, freq: freq} = params, _range)
+  def unfold(date, %{by_month: _months, freq: freq} = params)
   when is_freq_valid(freq) do
     filter(date, params)
   end
 
-  def unfold(date, %{}, _range) do
+  def unfold(date, %{}) do
     [date]
   end
 

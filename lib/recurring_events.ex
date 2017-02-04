@@ -4,43 +4,40 @@ defmodule RecurringEvents do
   use RecurringEvents.Guards
 
 
-  def unfold(_date, %{count: _, until: _}, _range) do
+  def unfold(_date, %{count: _, until: _}) do
     {:error, "Can have either, count or until"}
   end
 
-  def unfold(date, %{freq: freq} = params, range) when is_freq_valid(freq) do
-    {:ok, unfold!(date, params, range)}
+  def unfold(date, %{freq: freq} = params) when is_freq_valid(freq) do
+    {:ok, unfold!(date, params)}
   end
 
-  def unfold(_date, %{freq: _}, _range), do: {:error, "Frequency is invalid"}
-  def unfold(_date, _rrule, _range), do: {:error, "Frequency is missing"}
+  def unfold(_date, %{freq: _}), do: {:error, "Frequency is invalid"}
+  def unfold(_date, _rrule), do: {:error, "Frequency is missing"}
 
-  def unfold!(date, %{freq: freq} = params, range) do
-    until = get_until_date(params, range)
-    count = get_count(params)
+  def unfold!(date, %{freq: freq} = params) do
     date
-    |> get_freq_module(freq).unfold!(Map.put(params, :until, until))
+    |> get_freq_module(freq).unfold!(params)
     |> Stream.flat_map(fn date ->
-      RecurringEvents.ByMonth.unfold(date, params, range)
+      RecurringEvents.ByMonth.unfold(date, params)
     end)
     |> Stream.flat_map(fn date ->
-      RecurringEvents.ByDay.unfold(date, params, range)
+      RecurringEvents.ByDay.unfold(date, params)
     end)
     |> drop_before(date)
     |> prepend(date)
-    |> drop_after(until)
-    |> drop_after(count)
+    |> drop_after(params)
   end
 
-  defp drop_after(list, :infinite), do: list
-  defp drop_after(list, count) when is_integer(count) do
+  defp drop_after(list, %{count: count}) do
     Stream.take(list, count)
   end
-  defp drop_after(list, date) do
+  defp drop_after(list, %{until: date}) do
     Stream.take_while(list, fn date_ ->
       Date.compare(date, date_) != :lt
     end)
   end
+  defp drop_after(list, %{}), do: list
 
   defp drop_before(list, date) do
     Stream.drop_while(list, fn date_ ->
@@ -52,21 +49,8 @@ defmodule RecurringEvents do
     Stream.concat([element], list)
   end
 
-  defp get_count(%{count: count}), do: count
-  defp get_count(%{}), do: :infinite
-
-  defp get_until_date(%{until: until_date}, {_from, to_date}) do
-    if Date.compare(until_date, to_date) == :gt do
-      to_date
-    else
-      until_date
-    end
-  end
-  defp get_until_date(%{}, {_from, to}), do: to
-
   defp get_freq_module(:yearly), do: Yearly
   defp get_freq_module(:monthly), do: Monthly
   defp get_freq_module(:weekly), do: Weekly
   defp get_freq_module(:daily), do: Daily
-
 end

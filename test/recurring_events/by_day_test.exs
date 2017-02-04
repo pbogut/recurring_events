@@ -10,28 +10,28 @@ defmodule RecurringEvents.ByDayTest do
   test "can be filetered by day of the week when freq: :daily" do
     assert [@monday] ==
       @monday
-      |> ByDay.unfold(%{freq: :daily, by_day: :monday}, {})
+      |> ByDay.unfold(%{freq: :daily, by_day: :monday})
       |> Enum.to_list
   end
 
   test "can be inflate by week when freq: :weekly" do
     assert [@monday, @wednesday] ==
       @monday
-      |> ByDay.unfold(%{freq: :weekly, by_day: [:monday, :wednesday]}, {})
+      |> ByDay.unfold(%{freq: :weekly, by_day: [:monday, :wednesday]})
       |> Enum.to_list
   end
 
   test "will not change if filtered by provided day with freq: weekly" do
     assert [@wednesday] ==
       @wednesday
-      |> ByDay.unfold(%{freq: :weekly, by_day: :wednesday}, {})
+      |> ByDay.unfold(%{freq: :weekly, by_day: :wednesday})
       |> Enum.to_list
   end
 
   test "can be inflate by month when freq: :monthly" do
     assert [~D[2017-01-04], ~D[2017-01-11], ~D[2017-01-18], @wednesday] ==
       @wednesday
-      |> ByDay.unfold(%{freq: :monthly, by_day: :wednesday}, {})
+      |> ByDay.unfold(%{freq: :monthly, by_day: :wednesday})
       |> Enum.to_list
   end
 
@@ -43,22 +43,22 @@ defmodule RecurringEvents.ByDayTest do
       ~D[2017-03-31],
     ] ==
       @wednesday
-      |> ByDay.unfold(%{freq: :yearly, by_day: :friday}, {})
+      |> ByDay.unfold(%{freq: :yearly, by_day: :friday})
       |> Enum.take(13)
   end
 
   test "can be inflate by month when by_month: is present" do
     assert [~D[2017-01-04], ~D[2017-01-11], ~D[2017-01-18], @wednesday] ==
       @wednesday
-      |> ByDay.unfold(%{freq: :daily, by_day: :wednesday, by_month: []}, {})
+      |> ByDay.unfold(%{freq: :daily, by_day: :wednesday, by_month: []})
       |> Enum.to_list
     assert [~D[2017-01-04], ~D[2017-01-11], ~D[2017-01-18], @wednesday] ==
       @wednesday
-      |> ByDay.unfold(%{freq: :weekly, by_day: :wednesday, by_month: 2}, {})
+      |> ByDay.unfold(%{freq: :weekly, by_day: :wednesday, by_month: 2})
       |> Enum.to_list
     assert [~D[2017-01-04], ~D[2017-01-11], ~D[2017-01-18], @wednesday] ==
       @wednesday
-      |> ByDay.unfold(%{freq: :yearly, by_day: :wednesday, by_month: nil}, {})
+      |> ByDay.unfold(%{freq: :yearly, by_day: :wednesday, by_month: nil})
       |> Enum.to_list
   end
 end
