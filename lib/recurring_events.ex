@@ -1,8 +1,10 @@
 defmodule RecurringEvents do
-  alias RecurringEvents.Freq.{Yearly, Monthly, Weekly, Daily}
-  alias RecurringEvents.{ByMonth, ByDay}
-  alias RecurringEvents.Date
-  use RecurringEvents.Guards
+  alias RecurringEvents.{
+    Date, Guards,
+    Yearly, Monthly, Weekly, Daily,
+    ByMonth, ByDay
+  }
+  use Guards
 
 
   def unfold(_date, %{count: _, until: _}) do

@@ -1,11 +1,11 @@
-defmodule RecurringEvents.Freq.Weekly do
+defmodule RecurringEvents.Monthly do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :weekly} = params) do
+  def unfold(date, %{freq: :monthly} = params) do
     {:ok, do_unfold(date, params)}
   end
 
-  def unfold!(date, %{freq: :weekly} = params) do
+  def unfold!(date, %{freq: :monthly} = params) do
     do_unfold(date, params)
   end
 
@@ -28,7 +28,7 @@ defmodule RecurringEvents.Freq.Weekly do
   end
 
   defp next_iteration(date, step, iteration) do
-    next_date = Date.shift_date(date, step * iteration, :weeks)
+    next_date = Date.shift_date(date, step * iteration, :months)
     acc = {date, iteration + 1}
     {[next_date], acc}
   end
@@ -38,29 +38,11 @@ defmodule RecurringEvents.Freq.Weekly do
     Date.compare(date, until_date) == :gt
   end
 
-  defp until_date(%{until: until_date} = params) do
-    until_date
-    |> week_end_date(params)
+  defp until_date(%{until: until_date}) do
+    last_day = Date.last_day_of_the_month(until_date)
+    %{until_date | day: last_day}
   end
   defp until_date(%{}), do: :forever
-
-  defp week_end_date(date, params) do
-    current_day = Date.week_day(date)
-    end_day = week_end_day(params)
-
-    if current_day == end_day do
-      date
-    else
-      date
-      |> Date.shift_date(1, :days)
-      |> week_end_date(params)
-    end
-  end
-
-  defp week_end_day(%{week_start: start_day}) do
-    Date.prev_week_day(start_day)
-  end
-  defp week_end_day(%{}), do: :friday
 
   defp get_step(%{interval: interval}), do: interval
   defp get_step(%{}), do: 1

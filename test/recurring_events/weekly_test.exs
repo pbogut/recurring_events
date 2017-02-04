@@ -1,8 +1,8 @@
-defmodule RecurringEvents.Freq.WeeklyTest do
+defmodule RecurringEvents.WeeklyTest do
   use ExUnit.Case
-  doctest RecurringEvents.Freq.Weekly
+  doctest RecurringEvents.Weekly
 
-  alias RecurringEvents.Freq.Weekly
+  alias RecurringEvents.Weekly
 
   @date ~D[2017-12-28]
   @valid_rrule %{freq: :weekly}

@@ -1,6 +1,5 @@
 defmodule RecurringEvents.IcalRrulTest do
   use ExUnit.Case, async: true
-  # alias RecurringEvents.Freq.{Daily, Weekly, Monthly, Yearly}
 
   @doc """
     Daily for 10 occurrences

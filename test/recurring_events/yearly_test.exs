@@ -1,8 +1,8 @@
-defmodule RecurringEvents.Freq.YearlyTest do
+defmodule RecurringEvents.YearlyTest do
   use ExUnit.Case
-  doctest RecurringEvents.Freq.Yearly
+  doctest RecurringEvents.Yearly
 
-  alias RecurringEvents.Freq.Yearly
+  alias RecurringEvents.Yearly
 
   @date ~D[2017-01-01]
   @valid_rrule %{freq: :yearly}

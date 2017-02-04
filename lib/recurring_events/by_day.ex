@@ -68,7 +68,7 @@ defmodule RecurringEvents.ByDay do
 
   defp inflate(start_date, stop_date, days) do
     start_date
-    |> RecurringEvents.Freq.Daily.unfold!(%{until: stop_date, freq: :daily})
+    |> RecurringEvents.Daily.unfold!(%{until: stop_date, freq: :daily})
     |> Stream.filter(fn date ->
       is_week_day_in(date, days)
     end)
