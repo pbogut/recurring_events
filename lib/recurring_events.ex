@@ -1,9 +1,7 @@
 defmodule RecurringEvents do
-  alias RecurringEvents.{
-    Date, Guards,
-    Yearly, Monthly, Weekly, Daily,
-    ByMonth, ByDay
-  }
+  alias RecurringEvents.{Date, Guards,
+                         Yearly, Monthly, Weekly, Daily,
+                         ByMonth, ByDay}
   use Guards
 
 

@@ -1,6 +1,6 @@
 defmodule RecurringEvents.ByDay do
   use RecurringEvents.Guards
-  alias RecurringEvents.Date
+  alias RecurringEvents.{Date, Daily}
 
   def unfold(date, %{by_day: day} = params)
   when is_atom(day) do
@@ -68,7 +68,7 @@ defmodule RecurringEvents.ByDay do
 
   defp inflate(start_date, stop_date, days) do
     start_date
-    |> RecurringEvents.Daily.unfold!(%{until: stop_date, freq: :daily})
+    |> Daily.unfold!(%{until: stop_date, freq: :daily})
     |> Stream.filter(fn date ->
       is_week_day_in(date, days)
     end)

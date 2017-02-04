@@ -1,6 +1,6 @@
 defmodule RecurringEvents.ByMonth do
-  use RecurringEvents.Guards
-  alias RecurringEvents.Date
+  alias RecurringEvents.{Date, Guards}
+  use Guards
 
   def unfold(date, %{by_month: month} = params)
   when is_integer(month) do
