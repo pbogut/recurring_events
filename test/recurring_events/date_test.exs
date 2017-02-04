@@ -1,6 +1,6 @@
 defmodule RecurringEvents.DateTest do
   use ExUnit.Case
-  doctest RecurringEvents
+  doctest RecurringEvents.Date
 
   alias RecurringEvents.Date
 
