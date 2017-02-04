@@ -1,5 +1,6 @@
 defmodule RecurringEvents do
   alias RecurringEvents.Freq.{Yearly, Monthly, Weekly, Daily}
+  alias RecurringEvents.{ByMonth, ByDay}
   alias RecurringEvents.Date
   use RecurringEvents.Guards
 
@@ -18,12 +19,8 @@ defmodule RecurringEvents do
   def unfold!(date, %{freq: freq} = params) do
     date
     |> get_freq_module(freq).unfold!(params)
-    |> Stream.flat_map(fn date ->
-      RecurringEvents.ByMonth.unfold(date, params)
-    end)
-    |> Stream.flat_map(fn date ->
-      RecurringEvents.ByDay.unfold(date, params)
-    end)
+    |> Stream.flat_map(&ByMonth.unfold &1, params)
+    |> Stream.flat_map(&ByDay.unfold &1, params)
     |> drop_before(date)
     |> prepend(date)
     |> drop_after(params)
