@@ -4,7 +4,6 @@ defmodule RecurringEvents do
                          ByMonth, ByDay}
   use Guards
 
-
   def unfold(_date, %{count: _, until: _}) do
     {:error, "Can have either, count or until"}
   end
@@ -26,25 +25,17 @@ defmodule RecurringEvents do
     |> drop_after(params)
   end
 
-  defp drop_after(list, %{count: count}) do
-    Stream.take(list, count)
+  defp drop_before(list, date) do
+    Stream.drop_while(list, &(Date.compare(date, &1) != :lt))
   end
+
   defp drop_after(list, %{until: date}) do
-    Stream.take_while(list, fn date_ ->
-      Date.compare(date, date_) != :lt
-    end)
+    Stream.take_while(list, &(Date.compare(date, &1) != :lt))
   end
+  defp drop_after(list, %{count: count}), do: Stream.take(list, count)
   defp drop_after(list, %{}), do: list
 
-  defp drop_before(list, date) do
-    Stream.drop_while(list, fn date_ ->
-      Date.compare(date, date_) != :lt
-    end)
-  end
-
-  defp prepend(list, element) do
-    Stream.concat([element], list)
-  end
+  defp prepend(list, element), do: Stream.concat([element], list)
 
   defp get_freq_module(:yearly), do: Yearly
   defp get_freq_module(:monthly), do: Monthly
