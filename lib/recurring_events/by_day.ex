@@ -7,28 +7,15 @@ defmodule RecurringEvents.ByDay do
     unfold(date, %{params | by_day: [day]})
   end
 
-  def unfold(date, %{by_day: _days, by_month: _} = params) do
-    month_inflate(date, params)
-  end
-
-  def unfold(date, %{by_day: _days, freq: :daily} = params) do
-    filter(date, params)
-  end
-
-  def unfold(date, %{by_day: _days, freq: :weekly} = params) do
-    week_inflate(date, params)
-  end
-
-  def unfold(date, %{by_day: _days, freq: :monthly} = params) do
-    month_inflate(date, params)
-  end
-
-  def unfold(date, %{by_day: _days, freq: :yearly} = params) do
-    year_inflate(date, params)
-  end
-
-  def unfold(date, %{}) do
-    [date]
+  def unfold(date, params) do
+    case params do
+      %{by_day: _days, by_month: _} -> month_inflate(date, params)
+      %{by_day: _days, freq: :daily} -> filter(date, params)
+      %{by_day: _days, freq: :weekly} -> week_inflate(date, params)
+      %{by_day: _days, freq: :monthly} -> month_inflate(date, params)
+      %{by_day: _days, freq: :yearly} -> year_inflate(date, params)
+      _ -> [date]
+    end
   end
 
   defp filter(dates, params) when is_list(dates) do
@@ -62,16 +49,13 @@ defmodule RecurringEvents.ByDay do
   end
 
   defp is_week_day_in(date, days) do
-    days
-    |> Enum.any?(fn day -> Date.week_day(date) == day end)
+    Enum.any?(days, &Date.week_day(date) == &1)
   end
 
   defp inflate(start_date, stop_date, days) do
     start_date
     |> Daily.unfold!(%{until: stop_date, freq: :daily})
-    |> Stream.filter(fn date ->
-      is_week_day_in(date, days)
-    end)
+    |> Stream.filter(&is_week_day_in(&1, days))
   end
 
   defp week_start_date(date, params) do
