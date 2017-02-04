@@ -11,7 +11,7 @@ defmodule RR.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 2-11
   """
   test "Daily for 10 occurrences" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :daily, count: 10})
 
     assert date_expand({1997, 09, Enum.to_list(2..11)})
@@ -28,7 +28,7 @@ defmodule RR.IcalRrulTest do
         (1997 9:00 AM EST)October 26-31;November 1-30;December 1-23
   """
   test "Daily until December 24, 1997" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :daily, until: ~D[1997-12-24]})
 
     assert date_expand([
@@ -51,7 +51,7 @@ defmodule RR.IcalRrulTest do
          Dec 1,3,...
   """
   test "Every other day - forever" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :daily, interval: 2})
 
     expect = date_expand([
@@ -73,7 +73,7 @@ defmodule RR.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 2,12,22;October 2,12
   """
   test "Every 10 days, 5 occurrences" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :daily, interval: 10, count: 5})
 
     expect = date_expand([
@@ -98,7 +98,7 @@ defmodule RR.IcalRrulTest do
         (2000 9:00 AM EDT)January 1-31
   """
   test "Everyday in January, for 3 years" do
-    {:ok, result} = ~D[1998-01-01]
+    result = ~D[1998-01-01]
     |> RR.unfold(%{freq: :daily, until: ~D[2000-01-31], by_month: 1})
 
     expect = date_expand([
@@ -120,7 +120,7 @@ defmodule RR.IcalRrulTest do
         (1997 9:00 AM EST)October 28;November 4
   """
   test "Weekly for 10 occurrences" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :weekly, count: 10})
 
     expect = date_expand([
@@ -143,7 +143,7 @@ defmodule RR.IcalRrulTest do
                           December 2,9,16,23
   """
   test "Weekly until December 24, 1997" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :weekly, until: ~D[1997-12-24]})
 
     expect = date_expand([
@@ -168,7 +168,7 @@ defmodule RR.IcalRrulTest do
     ...
   """
   test "Every other week - forever" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :weekly, interval: 2, week_start: :sunday})
 
     expect = date_expand([
@@ -193,7 +193,7 @@ defmodule RR.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 2,4,9,11,16,18,23,25,30;October 2
   """
   test "Weekly on Tuesday and Thursday for 5 weeks" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :weekly, count: 10, week_start: :sunday,
                    by_day: [:tuesday, :thursday]})
 
@@ -218,7 +218,7 @@ defmodule RR.IcalRrulTest do
                           December 8,10,12,22
   """
   test "Every other week on Monday, Wednesday and Friday until December 24, 1997, but starting on Tuesday, September 2, 1997:" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :weekly, interval: 2, week_start: :sunday,
                    by_day: [:monday, :wednesday, :friday],
                    until: ~D[1997-12-24]})
@@ -243,7 +243,7 @@ defmodule RR.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 2,4,16,18,30;October 2,14,16
   """
   test "Every other week on Tuesday and Thursday, for 8 occurrences" do
-    {:ok, result} = ~D[1997-09-02]
+    result = ~D[1997-09-02]
     |> RR.unfold(%{freq: :weekly, interval: 2, week_start: :sunday,
                    count: 8, by_day: [:tuesday, :thursday]})
 
@@ -395,8 +395,7 @@ defmodule RR.IcalRrulTest do
     are specified, the day is gotten from DTSTART
   """
   test "Yearly in June and July for 10 occurrences" do
-    {:ok, result} = ~D[1997-06-10]
-
+    result = ~D[1997-06-10]
     |> RR.unfold(%{freq: :yearly, count: 10, by_month: [6, 7]})
 
     expect = date_expand([
@@ -418,8 +417,7 @@ defmodule RR.IcalRrulTest do
         (2003 9:00 AM EST)January 10;February 10;March 10
   """
   test "Every other year on January, February, and March for 10 occurrences" do
-    {:ok, result} = ~D[1997-03-10]
-
+    result = ~D[1997-03-10]
     |> RR.unfold(%{freq: :yearly, count: 10, by_month: [1, 2, 3], interval: 2})
 
     expect = date_expand([
@@ -493,8 +491,7 @@ defmodule RR.IcalRrulTest do
     ...
   """
   test "Every Thursday in March, forever" do
-    {:ok, result} = ~D[1997-03-13]
-
+    result = ~D[1997-03-13]
     |> RR.unfold(%{freq: :yearly, by_month: 3, by_day: :thursday})
 
     expect = date_expand([
@@ -521,8 +518,7 @@ defmodule RR.IcalRrulTest do
     ...
   """
   test "Every Thursday, but only during June, July, and August, forever" do
-    {:ok, result} = ~D[1997-06-05]
-
+    result = ~D[1997-06-05]
     |> RR.unfold(%{freq: :yearly, by_month: [6,7,8], by_day: :thursday})
 
     expect = date_expand([

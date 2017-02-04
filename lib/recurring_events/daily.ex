@@ -1,13 +1,7 @@
 defmodule RecurringEvents.Daily do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :daily} = params) do
-    {:ok, do_unfold(date, params)}
-  end
-
-  def unfold!(date, %{freq: :daily} = params) do
-    do_unfold(date, params)
-  end
+  def unfold(date, %{freq: :daily} = params), do: do_unfold(date, params)
 
   defp do_unfold(date, %{} = params) do
     step = get_step(params)

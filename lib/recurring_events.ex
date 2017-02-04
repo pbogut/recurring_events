@@ -5,19 +5,21 @@ defmodule RecurringEvents do
   use Guards
 
   def unfold(_date, %{count: _, until: _}) do
-    {:error, "Can have either, count or until"}
+    raise ArgumentError, message: "Can have either, count or until"
   end
-
   def unfold(date, %{freq: freq} = params) when is_freq_valid(freq) do
-    {:ok, unfold!(date, params)}
+    do_unfold(date, params)
+  end
+  def unfold(_date, %{freq: _}) do
+    raise ArgumentError, message: "Frequency is invalid"
+  end
+  def unfold(_date, _rrule) do
+    raise ArgumentError, message: "Frequency is required"
   end
 
-  def unfold(_date, %{freq: _}), do: {:error, "Frequency is invalid"}
-  def unfold(_date, _rrule), do: {:error, "Frequency is missing"}
-
-  def unfold!(date, %{freq: freq} = params) do
+  defp do_unfold(date, %{freq: freq} = params) do
     date
-    |> get_freq_module(freq).unfold!(params)
+    |> get_freq_module(freq).unfold(params)
     |> Stream.flat_map(&ByMonth.unfold &1, params)
     |> Stream.flat_map(&ByDay.unfold &1, params)
     |> drop_before(date)

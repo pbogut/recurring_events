@@ -8,23 +8,27 @@ defmodule RecurringEventsTest do
   @valid_rrule %{freq: :yearly}
 
   test "freq is required" do
-    assert {:error, _} =
+    assert_raise ArgumentError, "Frequency is required", fn ->
       RR.unfold(@date, %{})
+    end
+  end
+
+  test "will rise error if frequency is invalid" do
+    assert_raise ArgumentError, "Frequency is invalid", fn ->
+      RR.unfold(@date, %{freq: :whatever})
+    end
   end
 
   test "can have eathier until or count" do
-    assert {:error, _} =
+    assert_raise ArgumentError, "Can have either, count or until", fn ->
       RR.unfold(@date, Map.merge(@valid_rrule, %{count: 1, until: 2}))
-    assert {:ok, _} =
-      RR.unfold(@date, Map.put(@valid_rrule, :until, @date))
-    assert {:ok, _} =
-      RR.unfold(@date, Map.put(@valid_rrule, :count, 1))
+    end
   end
 
   test "can handle yearly frequency" do
     events  =
       @date
-      |> RR.unfold!(%{freq: :yearly})
+      |> RR.unfold(%{freq: :yearly})
       |> Enum.take(3)
     assert 3 = Enum.count(events)
   end
@@ -32,7 +36,7 @@ defmodule RecurringEventsTest do
   test "can handle monthly frequency" do
     events =
       @date
-      |> RR.unfold!(%{freq: :monthly})
+      |> RR.unfold(%{freq: :monthly})
       |> Enum.take(36)
     assert 36 = Enum.count(events)
   end
@@ -40,7 +44,7 @@ defmodule RecurringEventsTest do
   test "can handle daily frequency" do
     events =
       @date
-      |> RR.unfold!(%{freq: :daily})
+      |> RR.unfold(%{freq: :daily})
       |> Enum.take(90)
     assert 90 = Enum.count(events)
   end
@@ -48,7 +52,7 @@ defmodule RecurringEventsTest do
   test "can handle weekly frequency" do
     events =
       @date
-      |> RR.unfold!(%{freq: :weekly})
+      |> RR.unfold(%{freq: :weekly})
       |> Enum.take(13)
     assert 13 = Enum.count(events)
   end

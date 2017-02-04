@@ -1,13 +1,7 @@
 defmodule RecurringEvents.Monthly do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :monthly} = params) do
-    {:ok, do_unfold(date, params)}
-  end
-
-  def unfold!(date, %{freq: :monthly} = params) do
-    do_unfold(date, params)
-  end
+  def unfold(date, %{freq: :monthly} = params), do: do_unfold(date, params)
 
   defp do_unfold(date, %{} = params) do
     step = get_step(params)
