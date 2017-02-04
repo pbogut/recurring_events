@@ -17,6 +17,10 @@ defmodule RecurringEvents do
     raise ArgumentError, message: "Frequency is required"
   end
 
+  def take(date, params, count) do
+    date |> do_unfold(params) |> Enum.take(count)
+  end
+
   defp do_unfold(date, %{freq: freq} = params) do
     date
     |> get_freq_module(freq).unfold(params)

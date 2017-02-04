@@ -56,4 +56,11 @@ defmodule RecurringEventsTest do
       |> Enum.take(13)
     assert 13 = Enum.count(events)
   end
+
+  test "can return list instead of stream" do
+    stream = RR.unfold(@date, %{freq: :weekly})
+    list = RR.take(@date, %{freq: :weekly}, 29)
+    assert is_list(list)
+    assert list == Enum.take(stream, 29)
+  end
 end
