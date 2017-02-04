@@ -26,11 +26,11 @@ defmodule RecurringEvents do
   end
 
   defp drop_before(list, date) do
-    Stream.drop_while(list, &(Date.compare(date, &1) != :lt))
+    Stream.drop_while(list, &Date.compare(date, &1) != :lt)
   end
 
   defp drop_after(list, %{until: date}) do
-    Stream.take_while(list, &(Date.compare(date, &1) != :lt))
+    Stream.take_while(list, &Date.compare(date, &1) != :lt)
   end
   defp drop_after(list, %{count: count}), do: Stream.take(list, count)
   defp drop_after(list, %{}), do: list
