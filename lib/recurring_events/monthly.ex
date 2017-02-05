@@ -1,6 +1,22 @@
 defmodule RecurringEvents.Monthly do
+  @moduledoc """
+  Handles `:monthly` frequency rule
+  """
+
   alias RecurringEvents.Date
 
+  @doc """
+  Returns monthly stream of dates with respect to `:interval`, `:count` and
+  `:until` rules. Time and day in date provided as `:until` is ignored.
+
+  # Example
+
+      iex> RecurringEvents.Monthly.unfold(~N[2017-01-22 10:11:11],
+      ...>       %{freq: :monthly, until: ~N[2017-02-03 05:00:00]})
+      ...> |> Enum.take(10)
+      [~N[2017-01-22 10:11:11], ~N[2017-02-22 10:11:11]]
+
+  """
   def unfold(date, %{freq: :monthly} = rules), do: do_unfold(date, rules)
 
   defp do_unfold(date, %{} = rules) do

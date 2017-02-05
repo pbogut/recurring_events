@@ -1,6 +1,23 @@
 defmodule RecurringEvents.Yearly do
+  @moduledoc """
+  Handles `:yearly` frequency rule
+  """
+
   alias RecurringEvents.Date
 
+  @doc """
+  Returns yearly stream of dates with respect to `:interval`, `:count` and
+  `:until` rules. Only year form `:until` date is used, the rest of it is
+  ignored.
+
+  # Example
+
+      iex> RecurringEvents.Yearly.unfold(~N[2017-11-22 10:11:11],
+      ...>       %{freq: :yearly, until: ~N[2018-01-03 05:00:00]})
+      ...> |> Enum.take(10)
+      [~N[2017-11-22 10:11:11], ~N[2018-11-22 10:11:11]]
+
+  """
   def unfold(date, %{freq: :yearly} = rules), do: do_unfold(date, rules)
 
   defp do_unfold(date, %{} = rules) do

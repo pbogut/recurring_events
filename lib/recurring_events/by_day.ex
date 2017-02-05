@@ -1,7 +1,30 @@
 defmodule RecurringEvents.ByDay do
+  @moduledoc """
+  Handles `:by_day` rule
+  """
+
   use RecurringEvents.Guards
   alias RecurringEvents.{Date, Daily}
 
+  @doc """
+  Applies `:by_day` rule to given date and returns enumerable.
+  Depends on other rules it may create additional dates keep one provided
+  or remove it. See tests for details.
+
+  # Examples
+
+      iex> RecurringEvents.ByDay.unfold(~D[2017-01-22],
+      ...>       %{freq: :weekly, by_day: :monday})
+      ...> |> Enum.take(10)
+      [~D[2017-01-16]]
+
+      iex> RecurringEvents.ByDay.unfold(~D[2017-01-22],
+      ...>       %{freq: :monthly, by_day: :sunday})
+      ...> |> Enum.take(10)
+      [~D[2017-01-01], ~D[2017-01-08], ~D[2017-01-15], ~D[2017-01-22],
+       ~D[2017-01-29]]
+
+  """
   def unfold(date, %{by_day: day} = rules)
   when is_atom(day) do
     unfold(date, %{rules | by_day: [day]})

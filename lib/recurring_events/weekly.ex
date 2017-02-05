@@ -1,6 +1,23 @@
 defmodule RecurringEvents.Weekly do
+  @moduledoc """
+  Handles `:weekly` frequency rule
+  """
+
   alias RecurringEvents.Date
 
+  @doc """
+  Returns weekly stream of dates with respect to `:interval`, `:count` and
+  `:until` rules. Date provided as `:until` is used to figure out week
+  in which it occurs, exact date is not respected.
+
+  # Example
+
+      iex> RecurringEvents.Weekly.unfold(~N[2017-01-22 10:11:11],
+      ...>       %{freq: :weekly, until: ~N[2017-01-23 05:00:00]})
+      ...> |> Enum.take(10)
+      [~N[2017-01-22 10:11:11], ~N[2017-01-29 10:11:11]]
+
+  """
   def unfold(date, %{freq: :weekly} = rules), do: do_unfold(date, rules)
 
   defp do_unfold(date, %{} = rules) do
@@ -54,7 +71,7 @@ defmodule RecurringEvents.Weekly do
   defp week_end_day(%{week_start: start_day}) do
     Date.prev_week_day(start_day)
   end
-  defp week_end_day(%{}), do: :friday
+  defp week_end_day(%{}), do: :sunday
 
   defp get_step(%{interval: interval}), do: interval
   defp get_step(%{}), do: 1
