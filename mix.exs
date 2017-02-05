@@ -7,7 +7,6 @@ defmodule RecurringEvents.Mixfile do
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     preferred_cli_env: [docs: :docs],
      package: package(),
      description: description(),
      deps: deps()]
@@ -30,7 +29,7 @@ defmodule RecurringEvents.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:ex_doc, ">= 0.0.0", only: :docs}]
+    [{:ex_doc, ">= 0.0.0", only: :dev}]
   end
 
   defp package do
