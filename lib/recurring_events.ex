@@ -1,9 +1,52 @@
 defmodule RecurringEvents do
+  @moduledoc """
+  *RecurringEvents* is an Elixir library providing recurring events support
+  (duh!).
+
+  It loosely follows
+  [iCal Recurrence rule specification](http://www.kanzaki.com/docs/ical/rrule.html)
+  [RFC 2445](https://tools.ietf.org/html/rfc2445).
+
+  Currently, it is ignoring time but if DateTime or NaiveDateTime structure
+  is used time will be preserved (see below).
+
+      iex> RecurringEvents.take(~D[2016-12-07], %{freq: :daily}, 3)
+      [~D[2016-12-07], ~D[2016-12-08], ~D[2016-12-09]]
+
+      iex> RecurringEvents.take(~N[2016-01-17 12:21:06], %{freq: :weekly}, 2)
+      [~N[2016-01-17 12:21:06], ~N[2016-01-24 12:21:06]]
+
+  Currently supported rules
+
+    - `:count` - how many occurences should be return
+    - `:interval` - how often recurrence rule repeats
+    - `:freq` - this is the only required rule, possible values: `:yearly`,
+      `:monthly`, `:weekly`, `:daily`
+    - `:by_month` - month number or list of month numbers
+    - `:by_day` - day or list of days, possible values: `:monday`, `:tuesday`,
+      `:wednesday`, `:thursday`, `:friday`, `:saturday`, `:sunday`
+    - `:week_start` - start day of the week, see `:by_day` for possible values
+
+  For more usage examples, please, refer to
+  [tests](https://github.com/pbogut/recurring_events/blob/master/test/ical_rrul_test.exs)
+
+  """
+
   alias RecurringEvents.{Date, Guards,
                          Yearly, Monthly, Weekly, Daily,
                          ByMonth, ByDay}
   use Guards
 
+  @doc """
+  Returns stream of recurring events based on date and rules
+
+  # Example
+
+      iex> RecurringEvents.unfold(~D[2014-06-07], %{freq: :yearly})
+      ...> |> Enum.take(3)
+      [~D[2014-06-07], ~D[2015-06-07], ~D[2016-06-07]]
+
+  """
   def unfold(_date, %{count: _, until: _}) do
     raise ArgumentError, message: "Can have either, count or until"
   end

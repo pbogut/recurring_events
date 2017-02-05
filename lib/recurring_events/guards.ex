@@ -1,4 +1,7 @@
 defmodule RecurringEvents.Guards do
+  @moduledoc """
+  Provides guard macros for internal use
+  """
 
   defmacro __using__(_) do
     quote do
