@@ -2,24 +2,24 @@ defmodule RecurringEvents.ByDay do
   use RecurringEvents.Guards
   alias RecurringEvents.{Date, Daily}
 
-  def unfold(date, %{by_day: day} = params)
+  def unfold(date, %{by_day: day} = rules)
   when is_atom(day) do
-    unfold(date, %{params | by_day: [day]})
+    unfold(date, %{rules | by_day: [day]})
   end
 
-  def unfold(date, params) do
-    case params do
-      %{by_day: _days, by_month: _} -> month_inflate(date, params)
-      %{by_day: _days, freq: :daily} -> filter(date, params)
-      %{by_day: _days, freq: :weekly} -> week_inflate(date, params)
-      %{by_day: _days, freq: :monthly} -> month_inflate(date, params)
-      %{by_day: _days, freq: :yearly} -> year_inflate(date, params)
+  def unfold(date, rules) do
+    case rules do
+      %{by_day: _days, by_month: _} -> month_inflate(date, rules)
+      %{by_day: _days, freq: :daily} -> filter(date, rules)
+      %{by_day: _days, freq: :weekly} -> week_inflate(date, rules)
+      %{by_day: _days, freq: :monthly} -> month_inflate(date, rules)
+      %{by_day: _days, freq: :yearly} -> year_inflate(date, rules)
       _ -> [date]
     end
   end
 
-  defp filter(dates, params) when is_list(dates) do
-    Stream.flat_map(dates, &filter(&1, params))
+  defp filter(dates, rules) when is_list(dates) do
+    Stream.flat_map(dates, &filter(&1, rules))
   end
 
   defp filter(date, %{by_day: days}) do
@@ -42,9 +42,9 @@ defmodule RecurringEvents.ByDay do
     inflate(month_start, month_end, days)
   end
 
-  defp week_inflate(date, %{by_day: days} = params) do
-    week_start = week_start_date(date, params)
-    week_end = week_end_date(date, params)
+  defp week_inflate(date, %{by_day: days} = rules) do
+    week_start = week_start_date(date, rules)
+    week_end = week_end_date(date, rules)
     inflate(week_start, week_end, days)
   end
 
@@ -58,29 +58,29 @@ defmodule RecurringEvents.ByDay do
     |> Stream.filter(&is_week_day_in(&1, days))
   end
 
-  defp week_start_date(date, params) do
+  defp week_start_date(date, rules) do
     current_day = Date.week_day(date)
-    start_day = week_start_day(params)
+    start_day = week_start_day(rules)
 
     if current_day == start_day do
       date
     else
       date
       |> Date.shift_date(-1, :days)
-      |> week_start_date(params)
+      |> week_start_date(rules)
     end
   end
 
-  defp week_end_date(date, params) do
+  defp week_end_date(date, rules) do
     current_day = Date.week_day(date)
-    end_day = week_end_day(params)
+    end_day = week_end_day(rules)
 
     if current_day == end_day do
       date
     else
       date
       |> Date.shift_date(1, :days)
-      |> week_end_date(params)
+      |> week_end_date(rules)
     end
   end
 

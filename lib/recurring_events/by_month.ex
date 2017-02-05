@@ -2,18 +2,18 @@ defmodule RecurringEvents.ByMonth do
   alias RecurringEvents.{Date, Guards}
   use Guards
 
-  def unfold(date, %{by_month: month} = params)
+  def unfold(date, %{by_month: month} = rules)
   when is_integer(month) do
-    unfold(date, %{params | by_month: [month]})
+    unfold(date, %{rules | by_month: [month]})
   end
 
-  def unfold(date, %{by_month: _months, freq: :yearly} = params) do
-    inflate(date, params)
+  def unfold(date, %{by_month: _months, freq: :yearly} = rules) do
+    inflate(date, rules)
   end
 
-  def unfold(date, %{by_month: _months, freq: freq} = params)
+  def unfold(date, %{by_month: _months, freq: freq} = rules)
   when is_freq_valid(freq) do
-    filter(date, params)
+    filter(date, rules)
   end
 
   def unfold(date, %{}) do

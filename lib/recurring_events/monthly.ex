@@ -1,12 +1,12 @@
 defmodule RecurringEvents.Monthly do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :monthly} = params), do: do_unfold(date, params)
+  def unfold(date, %{freq: :monthly} = rules), do: do_unfold(date, rules)
 
-  defp do_unfold(date, %{} = params) do
-    step = get_step(params)
-    count = get_count(params)
-    until_date = until_date(params)
+  defp do_unfold(date, %{} = rules) do
+    step = get_step(rules)
+    count = get_count(rules)
+    until_date = until_date(rules)
 
     Stream.resource(
       fn -> {date, 0} end,

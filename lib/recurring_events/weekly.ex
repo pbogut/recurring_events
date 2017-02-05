@@ -1,12 +1,12 @@
 defmodule RecurringEvents.Weekly do
   alias RecurringEvents.Date
 
-  def unfold(date, %{freq: :weekly} = params), do: do_unfold(date, params)
+  def unfold(date, %{freq: :weekly} = rules), do: do_unfold(date, rules)
 
-  defp do_unfold(date, %{} = params) do
-    step = get_step(params)
-    count = get_count(params)
-    until_date = until_date(params)
+  defp do_unfold(date, %{} = rules) do
+    step = get_step(rules)
+    count = get_count(rules)
+    until_date = until_date(rules)
 
     Stream.resource(
       fn -> {date, 0} end,
@@ -32,22 +32,22 @@ defmodule RecurringEvents.Weekly do
     Date.compare(date, until_date) == :gt
   end
 
-  defp until_date(%{until: until_date} = params) do
+  defp until_date(%{until: until_date} = rules) do
     until_date
-    |> week_end_date(params)
+    |> week_end_date(rules)
   end
   defp until_date(%{}), do: :forever
 
-  defp week_end_date(date, params) do
+  defp week_end_date(date, rules) do
     current_day = Date.week_day(date)
-    end_day = week_end_day(params)
+    end_day = week_end_day(rules)
 
     if current_day == end_day do
       date
     else
       date
       |> Date.shift_date(1, :days)
-      |> week_end_date(params)
+      |> week_end_date(rules)
     end
   end
 
