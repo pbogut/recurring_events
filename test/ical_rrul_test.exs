@@ -1,4 +1,4 @@
-defmodule RR.IcalRrulTest do
+defmodule RecurringEvents.IcalRrulTest do
   use ExUnit.Case, async: true
   alias RecurringEvents, as: RR
 
