@@ -684,8 +684,29 @@ defmodule RR.IcalRrulTest do
     RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU
     ==> (1997 EDT)August 5,17,19,31
   """
-  @tag :pending
   test "An example where the days generated makes a difference because of WKST" do
+    rules = %{freq: :weekly, interval: 2, count: 4,
+              by_day: [:tuesday, :sunday], week_start: :monday}
+
+    monday_result = ~D[1997-08-05]
+    |> RR.unfold(rules)
+
+    monday_expect = date_expand([
+      {1997, 8, Enum.to_list([5,10,19,24])},
+    ])
+
+    sunday_result = ~D[1997-08-05]
+    |> RR.unfold(%{rules | week_start: :sunday})
+
+    sunday_expect = date_expand([
+      {1997, 8, Enum.to_list([5,17,19,31])},
+    ])
+
+    refute monday_result == sunday_result
+    assert monday_expect ==
+      monday_result |> Enum.take(monday_expect |> Enum.count)
+    assert sunday_expect ==
+      sunday_result |> Enum.take(sunday_expect |> Enum.count)
   end
 
   def date_expand(date_list) when is_list(date_list) do
