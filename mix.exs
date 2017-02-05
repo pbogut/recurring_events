@@ -9,6 +9,10 @@ defmodule RecurringEvents.Mixfile do
      start_permanent: Mix.env == :prod,
      package: package(),
      description: description(),
+     docs: [
+       main: RecurringEvents,
+       source_url: "https://github.com/pbogut/recurring_events"
+     ],
      deps: deps()]
   end
 
@@ -40,7 +44,7 @@ defmodule RecurringEvents.Mixfile do
 
   defp description do
     """
-    Recurring Events library for Elixir.
+    Elixir library providing recurring calendar events support.
     """
   end
 end
