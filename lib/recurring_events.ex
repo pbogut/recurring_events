@@ -24,7 +24,10 @@ defmodule RecurringEvents do
       `:monthly`, `:weekly`, `:daily`
     - `:by_month` - month number or list of month numbers
     - `:by_day` - day or list of days, possible values: `:monday`, `:tuesday`,
-      `:wednesday`, `:thursday`, `:friday`, `:saturday`, `:sunday`
+      `:wednesday`, `:thursday`, `:friday`, `:saturday`, `:sunday`.
+      This rule can also accept tuples with occurrence number when used with
+      `:monthly` or `:yearly` frequency (e.g. `{3, :monday}` for 3rd Monday or
+      `{-2, :tuesday}` for 2nd to last Tuesday)
     - `:week_start` - start day of the week, see `:by_day` for possible values
 
   For more usage examples, please, refer to
