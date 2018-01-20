@@ -26,7 +26,7 @@ defmodule RecurringEvents.ByDay do
 
   """
   def unfold(date, %{by_day: day} = rules)
-  when is_atom(day) do
+      when is_atom(day) do
     unfold(date, %{rules | by_day: [day]})
   end
 
@@ -72,7 +72,7 @@ defmodule RecurringEvents.ByDay do
   end
 
   defp is_week_day_in(date, days) do
-    Enum.any?(days, &Date.week_day(date) == &1)
+    Enum.any?(days, &(Date.week_day(date) == &1))
   end
 
   defp inflate(start_date, stop_date, days) do
@@ -110,6 +110,7 @@ defmodule RecurringEvents.ByDay do
   defp week_end_day(%{week_start: start_day}) do
     Date.prev_week_day(start_day)
   end
+
   defp week_end_day(%{}), do: :sunday
 
   defp week_start_day(%{week_start: start_day}), do: start_day

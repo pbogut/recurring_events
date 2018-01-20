@@ -33,7 +33,8 @@ defmodule RecurringEvents.MonthlyTest do
 
   test "for interval 5 it should return events every 5 months" do
     events = Monthly.unfold(@date, @valid_rrule |> Map.put(:interval, 5))
-    assert [@date, %{@date | month: 6}, %{@date | month: 11},
-                   %{@date | year: 2018, month: 4}] == events |> Enum.take(4)
+
+    assert [@date, %{@date | month: 6}, %{@date | month: 11}, %{@date | year: 2018, month: 4}] ==
+             events |> Enum.take(4)
   end
 end

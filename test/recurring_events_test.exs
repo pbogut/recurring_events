@@ -26,10 +26,11 @@ defmodule RecurringEventsTest do
   end
 
   test "can handle yearly frequency" do
-    events  =
+    events =
       @date
       |> RR.unfold(%{freq: :yearly})
       |> Enum.take(3)
+
     assert 3 = Enum.count(events)
   end
 
@@ -38,6 +39,7 @@ defmodule RecurringEventsTest do
       @date
       |> RR.unfold(%{freq: :monthly})
       |> Enum.take(36)
+
     assert 36 = Enum.count(events)
   end
 
@@ -46,6 +48,7 @@ defmodule RecurringEventsTest do
       @date
       |> RR.unfold(%{freq: :daily})
       |> Enum.take(90)
+
     assert 90 = Enum.count(events)
   end
 
@@ -54,6 +57,7 @@ defmodule RecurringEventsTest do
       @date
       |> RR.unfold(%{freq: :weekly})
       |> Enum.take(13)
+
     assert 13 = Enum.count(events)
   end
 

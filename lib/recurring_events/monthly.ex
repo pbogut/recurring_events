@@ -28,13 +28,15 @@ defmodule RecurringEvents.Monthly do
       fn -> {date, 0} end,
       fn {date, iteration} ->
         {[next_date], _} = next_result = next_iteration(date, step, iteration)
+
         cond do
           iteration == count -> {:halt, nil}
           until_reached(next_date, until_date) -> {:halt, nil}
           true -> next_result
         end
       end,
-      fn _ -> nil end)
+      fn _ -> nil end
+    )
   end
 
   defp next_iteration(date, step, iteration) do
@@ -44,6 +46,7 @@ defmodule RecurringEvents.Monthly do
   end
 
   defp until_reached(_date, :forever), do: false
+
   defp until_reached(date, until_date) do
     Date.compare(date, until_date) == :gt
   end
@@ -52,6 +55,7 @@ defmodule RecurringEvents.Monthly do
     last_day = Date.last_day_of_the_month(until_date)
     %{until_date | day: last_day}
   end
+
   defp until_date(%{}), do: :forever
 
   defp get_step(%{interval: interval}), do: interval

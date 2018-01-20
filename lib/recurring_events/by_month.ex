@@ -25,7 +25,7 @@ defmodule RecurringEvents.ByMonth do
 
   """
   def unfold(date, %{by_month: month} = rules)
-  when is_integer(month) do
+      when is_integer(month) do
     unfold(date, %{rules | by_month: [month]})
   end
 
@@ -34,7 +34,7 @@ defmodule RecurringEvents.ByMonth do
   end
 
   def unfold(date, %{by_month: _months, freq: freq} = rules)
-  when is_freq_valid(freq) do
+      when is_freq_valid(freq) do
     filter(date, rules)
   end
 

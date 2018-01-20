@@ -11,10 +11,8 @@ defmodule RecurringEvents.Guards do
 
   defmacro is_freq_valid(freq) do
     quote do
-      unquote(freq) == :yearly or
-      unquote(freq) == :monthly or
-      unquote(freq) == :weekly or
-      unquote(freq) == :daily
+      unquote(freq) == :yearly or unquote(freq) == :monthly or unquote(freq) == :weekly or
+        unquote(freq) == :daily
     end
   end
 end

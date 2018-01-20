@@ -29,13 +29,15 @@ defmodule RecurringEvents.Weekly do
       fn -> {date, 0} end,
       fn {date, iteration} ->
         {[next_date], _} = next_result = next_iteration(date, step, iteration)
+
         cond do
           iteration == count -> {:halt, nil}
           until_reached(next_date, until_date) -> {:halt, nil}
           true -> next_result
         end
       end,
-      fn _ -> nil end)
+      fn _ -> nil end
+    )
   end
 
   defp next_iteration(date, step, iteration) do
@@ -45,6 +47,7 @@ defmodule RecurringEvents.Weekly do
   end
 
   defp until_reached(_date, :forever), do: false
+
   defp until_reached(date, until_date) do
     Date.compare(date, until_date) == :gt
   end
@@ -53,6 +56,7 @@ defmodule RecurringEvents.Weekly do
     until_date
     |> week_end_date(rules)
   end
+
   defp until_date(%{}), do: :forever
 
   defp week_end_date(date, rules) do
@@ -71,6 +75,7 @@ defmodule RecurringEvents.Weekly do
   defp week_end_day(%{week_start: start_day}) do
     Date.prev_week_day(start_day)
   end
+
   defp week_end_day(%{}), do: :sunday
 
   defp get_step(%{interval: interval}), do: interval

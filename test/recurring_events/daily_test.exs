@@ -33,7 +33,6 @@ defmodule RecurringEvents.DailyTest do
 
   test "for interval 5 it should return events every 5 days" do
     events = Daily.unfold(@date, @valid_rrule |> Map.put(:interval, 5))
-    assert [~D[2017-12-28], ~D[2018-01-02], ~D[2018-01-07]] ==
-      events |> Enum.take(3)
+    assert [~D[2017-12-28], ~D[2018-01-02], ~D[2018-01-07]] == events |> Enum.take(3)
   end
 end

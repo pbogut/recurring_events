@@ -16,8 +16,7 @@ defmodule RecurringEvents.WeeklyTest do
     until = ~D[2018-01-11]
     events = Weekly.unfold(@date, @valid_rrule |> Map.put(:until, until))
     assert 3 == Enum.count(events)
-    assert [@date, ~D[2018-01-04], ~D[2018-01-11]] ==
-      events |> Enum.take(999)
+    assert [@date, ~D[2018-01-04], ~D[2018-01-11]] == events |> Enum.take(999)
   end
 
   test "with no count, until and interval it should stream forever" do

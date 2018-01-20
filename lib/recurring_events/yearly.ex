@@ -29,13 +29,15 @@ defmodule RecurringEvents.Yearly do
       fn -> {date, 0} end,
       fn {date, iteration} ->
         {[next_date], _} = next_result = next_iteration(date, step, iteration)
+
         cond do
           iteration == count -> {:halt, nil}
           next_date.year > until_year -> {:halt, nil}
           true -> next_result
         end
       end,
-      fn _ -> nil end)
+      fn _ -> nil end
+    )
   end
 
   defp next_iteration(date, step, iteration) do

@@ -1,4 +1,4 @@
-defmodule RecurringEvents.IcalRrulTest do
+defmodule RR.IcalRrulTest do
   use ExUnit.Case, async: true
   alias RecurringEvents, as: RR
 
@@ -11,11 +11,11 @@ defmodule RecurringEvents.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 2-11
   """
   test "Daily for 10 occurrences" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :daily, count: 10})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{freq: :daily, count: 10})
 
-    assert date_expand({1997, 09, Enum.to_list(2..11)})
-      == result |> Enum.take(999)
+    assert date_expand({1997, 09, Enum.to_list(2..11)}) == result |> Enum.take(999)
   end
 
   @doc """
@@ -28,15 +28,17 @@ defmodule RecurringEvents.IcalRrulTest do
         (1997 9:00 AM EST)October 26-31;November 1-30;December 1-23
   """
   test "Daily until December 24, 1997" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :daily, until: ~D[1997-12-24]})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{freq: :daily, until: ~D[1997-12-24]})
 
     assert date_expand([
              {1997, 09, Enum.to_list(2..30)},
              {1997, 10, Enum.to_list(1..31)},
              {1997, 11, Enum.to_list(1..30)},
              {1997, 12, Enum.to_list(1..23)},
-             {1997, 12, 24} # time is not supported yet, so include last
+             # time is not supported yet, so include last
+             {1997, 12, 24}
            ]) == result |> Enum.take(999)
   end
 
@@ -51,15 +53,17 @@ defmodule RecurringEvents.IcalRrulTest do
          Dec 1,3,...
   """
   test "Every other day - forever" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :daily, interval: 2})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{freq: :daily, interval: 2})
 
-    expect = date_expand([
-      {1997, 09, [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30]},
-      {1997, 10, [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30]},
-      {1997, 11, [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29]},
-      {1997, 12, [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31]},
-    ])
+    expect =
+      date_expand([
+        {1997, 09, [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]},
+        {1997, 10, [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]},
+        {1997, 11, [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]},
+        {1997, 12, [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]}
+      ])
 
     assert expect == Enum.take(result, Enum.count(expect))
   end
@@ -73,13 +77,15 @@ defmodule RecurringEvents.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 2,12,22;October 2,12
   """
   test "Every 10 days, 5 occurrences" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :daily, interval: 10, count: 5})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{freq: :daily, interval: 10, count: 5})
 
-    expect = date_expand([
-      {1997, 09, [2,12,22]},
-      {1997, 10, [2,12]},
-    ])
+    expect =
+      date_expand([
+        {1997, 09, [2, 12, 22]},
+        {1997, 10, [2, 12]}
+      ])
 
     assert expect == result |> Enum.take(999)
   end
@@ -98,16 +104,18 @@ defmodule RecurringEvents.IcalRrulTest do
         (2000 9:00 AM EDT)January 1-31
   """
   test "Everyday in January, for 3 years" do
-    result = ~D[1998-01-01]
-    |> RR.unfold(%{freq: :daily, until: ~D[2000-01-31], by_month: 1})
+    result =
+      ~D[1998-01-01]
+      |> RR.unfold(%{freq: :daily, until: ~D[2000-01-31], by_month: 1})
 
-    expect = date_expand([
-      {1998, 1, Enum.to_list(1..31)},
-      {1999, 1, Enum.to_list(1..31)},
-      {2000, 1, Enum.to_list(1..31)},
-    ])
+    expect =
+      date_expand([
+        {1998, 1, Enum.to_list(1..31)},
+        {1999, 1, Enum.to_list(1..31)},
+        {2000, 1, Enum.to_list(1..31)}
+      ])
 
-    assert expect == result |> Enum.take(expect |> Enum.count)
+    assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
   @doc """
@@ -120,14 +128,16 @@ defmodule RecurringEvents.IcalRrulTest do
         (1997 9:00 AM EST)October 28;November 4
   """
   test "Weekly for 10 occurrences" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :weekly, count: 10})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{freq: :weekly, count: 10})
 
-    expect = date_expand([
-      {1997, 9, [2,9,16,23,30]},
-      {1997, 10, [7,14,21,28]},
-      {1997, 11, 4},
-    ])
+    expect =
+      date_expand([
+        {1997, 9, [2, 9, 16, 23, 30]},
+        {1997, 10, [7, 14, 21, 28]},
+        {1997, 11, 4}
+      ])
 
     assert expect == result |> Enum.take(999)
   end
@@ -143,15 +153,17 @@ defmodule RecurringEvents.IcalRrulTest do
                           December 2,9,16,23
   """
   test "Weekly until December 24, 1997" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :weekly, until: ~D[1997-12-24]})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{freq: :weekly, until: ~D[1997-12-24]})
 
-    expect = date_expand([
-      {1997, 9, [2,9,16,23,30]},
-      {1997, 10, [7,14,21,28]},
-      {1997, 11, [4,11,18,25]},
-      {1997, 12, [2,9,16,23]},
-    ])
+    expect =
+      date_expand([
+        {1997, 9, [2, 9, 16, 23, 30]},
+        {1997, 10, [7, 14, 21, 28]},
+        {1997, 11, [4, 11, 18, 25]},
+        {1997, 12, [2, 9, 16, 23]}
+      ])
 
     assert expect == result |> Enum.take(999)
   end
@@ -168,18 +180,20 @@ defmodule RecurringEvents.IcalRrulTest do
     ...
   """
   test "Every other week - forever" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :weekly, interval: 2, week_start: :sunday})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{freq: :weekly, interval: 2, week_start: :sunday})
 
-    expect = date_expand([
-      {1997, 9, [2,16,30]},
-      {1997, 10, [14,28]},
-      {1997, 11, [11,25]},
-      {1997, 12, [9,23]},
-      {1998, 1, [6,20]},
-    ])
+    expect =
+      date_expand([
+        {1997, 9, [2, 16, 30]},
+        {1997, 10, [14, 28]},
+        {1997, 11, [11, 25]},
+        {1997, 12, [9, 23]},
+        {1998, 1, [6, 20]}
+      ])
 
-    assert expect == result |> Enum.take(expect |> Enum.count)
+    assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
   @doc """
@@ -193,16 +207,17 @@ defmodule RecurringEvents.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 2,4,9,11,16,18,23,25,30;October 2
   """
   test "Weekly on Tuesday and Thursday for 5 weeks" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :weekly, count: 10, week_start: :sunday,
-                   by_day: [:tuesday, :thursday]})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{freq: :weekly, count: 10, week_start: :sunday, by_day: [:tuesday, :thursday]})
 
-    expect = date_expand([
-      {1997, 9, [2,4,9,11,16,18,23,25,30]},
-      {1997, 10, 2},
-    ])
+    expect =
+      date_expand([
+        {1997, 9, [2, 4, 9, 11, 16, 18, 23, 25, 30]},
+        {1997, 10, 2}
+      ])
 
-    assert expect == result |> Enum.take(expect |> Enum.count)
+    assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
   @doc """
@@ -218,18 +233,25 @@ defmodule RecurringEvents.IcalRrulTest do
                           December 8,10,12,22
   """
   test "Every other week on Monday, Wednesday and Friday until December 24, 1997, but starting on Tuesday, September 2, 1997:" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :weekly, interval: 2, week_start: :sunday,
-                   by_day: [:monday, :wednesday, :friday],
-                   until: ~D[1997-12-24]})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{
+        freq: :weekly,
+        interval: 2,
+        week_start: :sunday,
+        by_day: [:monday, :wednesday, :friday],
+        until: ~D[1997-12-24]
+      })
 
-    expect = date_expand([
-      {1997, 9, [2,3,5,15,17,19,29]},
-      {1997, 10, [1,3,13,15,17,27,29,31]},
-      {1997, 11, [10,12,14,24,26,28]},
-      {1997, 12, [8,10,12,22, 24]}, # as we are testing it on dates only
-                                    # 24th should be included as well
-    ])
+    expect =
+      date_expand([
+        {1997, 9, [2, 3, 5, 15, 17, 19, 29]},
+        {1997, 10, [1, 3, 13, 15, 17, 27, 29, 31]},
+        {1997, 11, [10, 12, 14, 24, 26, 28]},
+        # as we are testing it on dates only
+        {1997, 12, [8, 10, 12, 22, 24]}
+        # 24th should be included as well
+      ])
 
     assert expect == result |> Enum.take(999)
   end
@@ -243,14 +265,21 @@ defmodule RecurringEvents.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 2,4,16,18,30;October 2,14,16
   """
   test "Every other week on Tuesday and Thursday, for 8 occurrences" do
-    result = ~D[1997-09-02]
-    |> RR.unfold(%{freq: :weekly, interval: 2, week_start: :sunday,
-                   count: 8, by_day: [:tuesday, :thursday]})
+    result =
+      ~D[1997-09-02]
+      |> RR.unfold(%{
+        freq: :weekly,
+        interval: 2,
+        week_start: :sunday,
+        count: 8,
+        by_day: [:tuesday, :thursday]
+      })
 
-    expect = date_expand([
-      {1997, 9, [2,4,16,18,30]},
-      {1997, 10, [2,14,16]},
-    ])
+    expect =
+      date_expand([
+        {1997, 9, [2, 4, 16, 18, 30]},
+        {1997, 10, [2, 14, 16]}
+      ])
 
     assert expect == result |> Enum.take(999)
   end
@@ -395,12 +424,14 @@ defmodule RecurringEvents.IcalRrulTest do
     are specified, the day is gotten from DTSTART
   """
   test "Yearly in June and July for 10 occurrences" do
-    result = ~D[1997-06-10]
-    |> RR.unfold(%{freq: :yearly, count: 10, by_month: [6, 7]})
+    result =
+      ~D[1997-06-10]
+      |> RR.unfold(%{freq: :yearly, count: 10, by_month: [6, 7]})
 
-    expect = date_expand([
-      {1997..2001 |> Enum.to_list, [6, 7] |> Enum.to_list, 10},
-    ])
+    expect =
+      date_expand([
+        {1997..2001 |> Enum.to_list(), [6, 7] |> Enum.to_list(), 10}
+      ])
 
     assert expect == result |> Enum.take(999)
   end
@@ -417,15 +448,17 @@ defmodule RecurringEvents.IcalRrulTest do
         (2003 9:00 AM EST)January 10;February 10;March 10
   """
   test "Every other year on January, February, and March for 10 occurrences" do
-    result = ~D[1997-03-10]
-    |> RR.unfold(%{freq: :yearly, count: 10, by_month: [1, 2, 3], interval: 2})
+    result =
+      ~D[1997-03-10]
+      |> RR.unfold(%{freq: :yearly, count: 10, by_month: [1, 2, 3], interval: 2})
 
-    expect = date_expand([
-      {1997, 3, 10},
-      {1999, [1, 2, 3] |> Enum.to_list, 10},
-      {2001, [1, 2, 3] |> Enum.to_list, 10},
-      {2003, [1, 2, 3] |> Enum.to_list, 10},
-    ])
+    expect =
+      date_expand([
+        {1997, 3, 10},
+        {1999, [1, 2, 3] |> Enum.to_list(), 10},
+        {2001, [1, 2, 3] |> Enum.to_list(), 10},
+        {2003, [1, 2, 3] |> Enum.to_list(), 10}
+      ])
 
     assert expect == result |> Enum.take(999)
   end
@@ -491,16 +524,18 @@ defmodule RecurringEvents.IcalRrulTest do
     ...
   """
   test "Every Thursday in March, forever" do
-    result = ~D[1997-03-13]
-    |> RR.unfold(%{freq: :yearly, by_month: 3, by_day: :thursday})
+    result =
+      ~D[1997-03-13]
+      |> RR.unfold(%{freq: :yearly, by_month: 3, by_day: :thursday})
 
-    expect = date_expand([
-      {1997, 3, Enum.to_list([13,20,27])},
-      {1998, 3, Enum.to_list([5,12,19,26])},
-      {1999, 3, Enum.to_list([4,11,18,25])},
-    ])
+    expect =
+      date_expand([
+        {1997, 3, Enum.to_list([13, 20, 27])},
+        {1998, 3, Enum.to_list([5, 12, 19, 26])},
+        {1999, 3, Enum.to_list([4, 11, 18, 25])}
+      ])
 
-    assert expect == result |> Enum.take(expect |> Enum.count)
+    assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
   @doc """
@@ -518,22 +553,24 @@ defmodule RecurringEvents.IcalRrulTest do
     ...
   """
   test "Every Thursday, but only during June, July, and August, forever" do
-    result = ~D[1997-06-05]
-    |> RR.unfold(%{freq: :yearly, by_month: [6,7,8], by_day: :thursday})
+    result =
+      ~D[1997-06-05]
+      |> RR.unfold(%{freq: :yearly, by_month: [6, 7, 8], by_day: :thursday})
 
-    expect = date_expand([
-      {1997, 6, Enum.to_list([5,12,19,26])},
-      {1997, 7, Enum.to_list([3,10,17,24,31])},
-      {1997, 8, Enum.to_list([7,14,21,28])},
-      {1998, 6, Enum.to_list([4,11,18,25])},
-      {1998, 7, Enum.to_list([2,9,16,23,30])},
-      {1998, 8, Enum.to_list([6,13,20,27])},
-      {1999, 6, Enum.to_list([3,10,17,24])},
-      {1999, 7, Enum.to_list([1,8,15,22,29])},
-      {1999, 8, Enum.to_list([5,12,19,26])},
-    ])
+    expect =
+      date_expand([
+        {1997, 6, Enum.to_list([5, 12, 19, 26])},
+        {1997, 7, Enum.to_list([3, 10, 17, 24, 31])},
+        {1997, 8, Enum.to_list([7, 14, 21, 28])},
+        {1998, 6, Enum.to_list([4, 11, 18, 25])},
+        {1998, 7, Enum.to_list([2, 9, 16, 23, 30])},
+        {1998, 8, Enum.to_list([6, 13, 20, 27])},
+        {1999, 6, Enum.to_list([3, 10, 17, 24])},
+        {1999, 7, Enum.to_list([1, 8, 15, 22, 29])},
+        {1999, 8, Enum.to_list([5, 12, 19, 26])}
+      ])
 
-    assert expect == result |> Enum.take(expect |> Enum.count)
+    assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
   @doc """
@@ -669,7 +706,6 @@ defmodule RecurringEvents.IcalRrulTest do
   test "Every 20 minutes from 9:00 AM to 4:40 PM every day" do
   end
 
-
   @doc """
     An example where the days generated makes a difference because of WKST
 
@@ -685,49 +721,58 @@ defmodule RecurringEvents.IcalRrulTest do
     ==> (1997 EDT)August 5,17,19,31
   """
   test "An example where the days generated makes a difference because of WKST" do
-    rules = %{freq: :weekly, interval: 2, count: 4,
-              by_day: [:tuesday, :sunday], week_start: :monday}
+    rules = %{
+      freq: :weekly,
+      interval: 2,
+      count: 4,
+      by_day: [:tuesday, :sunday],
+      week_start: :monday
+    }
 
-    monday_result = ~D[1997-08-05]
-    |> RR.unfold(rules)
+    monday_result =
+      ~D[1997-08-05]
+      |> RR.unfold(rules)
 
-    monday_expect = date_expand([
-      {1997, 8, Enum.to_list([5,10,19,24])},
-    ])
+    monday_expect =
+      date_expand([
+        {1997, 8, Enum.to_list([5, 10, 19, 24])}
+      ])
 
-    sunday_result = ~D[1997-08-05]
-    |> RR.unfold(%{rules | week_start: :sunday})
+    sunday_result =
+      ~D[1997-08-05]
+      |> RR.unfold(%{rules | week_start: :sunday})
 
-    sunday_expect = date_expand([
-      {1997, 8, Enum.to_list([5,17,19,31])},
-    ])
+    sunday_expect =
+      date_expand([
+        {1997, 8, Enum.to_list([5, 17, 19, 31])}
+      ])
 
     refute monday_result == sunday_result
-    assert monday_expect ==
-      monday_result |> Enum.take(monday_expect |> Enum.count)
-    assert sunday_expect ==
-      sunday_result |> Enum.take(sunday_expect |> Enum.count)
+    assert monday_expect == monday_result |> Enum.take(monday_expect |> Enum.count())
+    assert sunday_expect == sunday_result |> Enum.take(sunday_expect |> Enum.count())
   end
 
   def date_expand(date_list) when is_list(date_list) do
     Enum.flat_map(date_list, &date_expand/1)
   end
+
   def date_expand({year, months, days}) when not is_list(year) do
     date_expand({[year], months, days})
   end
+
   def date_expand({years, month, days}) when not is_list(month) do
     date_expand({years, [month], days})
   end
+
   def date_expand({years, months, day}) when not is_list(day) do
     date_expand({years, months, [day]})
   end
 
-  def date_expand({years, months, days}) when
-                  is_list(years) and is_list(months) and is_list(days)
-  do
+  def date_expand({years, months, days})
+      when is_list(years) and is_list(months) and is_list(days) do
     for year <- years,
         month <- months,
         day <- days,
-    do: Date.from_erl!({year, month, day})
+        do: Date.from_erl!({year, month, day})
   end
 end

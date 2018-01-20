@@ -32,9 +32,7 @@ defmodule RecurringEvents do
 
   """
 
-  alias RecurringEvents.{Date, Guards,
-                         Yearly, Monthly, Weekly, Daily,
-                         ByMonth, ByDay}
+  alias RecurringEvents.{Date, Guards, Yearly, Monthly, Weekly, Daily, ByMonth, ByDay}
   use Guards
 
   @doc """
@@ -50,12 +48,15 @@ defmodule RecurringEvents do
   def unfold(_date, %{count: _, until: _}) do
     raise ArgumentError, message: "Can have either, count or until"
   end
+
   def unfold(date, %{freq: freq} = rules) when is_freq_valid(freq) do
     do_unfold(date, rules)
   end
+
   def unfold(_date, %{freq: _}) do
     raise ArgumentError, message: "Frequency is invalid"
   end
+
   def unfold(_date, _rrule) do
     raise ArgumentError, message: "Frequency is required"
   end
@@ -76,20 +77,21 @@ defmodule RecurringEvents do
   defp do_unfold(date, %{freq: freq} = rules) do
     date
     |> get_freq_module(freq).unfold(rules)
-    |> Stream.flat_map(&ByMonth.unfold &1, rules)
-    |> Stream.flat_map(&ByDay.unfold &1, rules)
+    |> Stream.flat_map(&ByMonth.unfold(&1, rules))
+    |> Stream.flat_map(&ByDay.unfold(&1, rules))
     |> drop_before(date)
     |> prepend(date)
     |> drop_after(rules)
   end
 
   defp drop_before(list, date) do
-    Stream.drop_while(list, &Date.compare(date, &1) != :lt)
+    Stream.drop_while(list, &(Date.compare(date, &1) != :lt))
   end
 
   defp drop_after(list, %{until: date}) do
-    Stream.take_while(list, &Date.compare(date, &1) != :lt)
+    Stream.take_while(list, &(Date.compare(date, &1) != :lt))
   end
+
   defp drop_after(list, %{count: count}), do: Stream.take(list, count)
   defp drop_after(list, %{}), do: list
 
