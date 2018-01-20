@@ -93,6 +93,50 @@ defmodule RecurringEvents.Date do
   end
 
   @doc """
+  Returns numbered week day of provided date
+
+  # Example
+
+     iex> RecurringEvents.Date.numbered_week_day(~D[2017-02-04], :month)
+     {1, :saturday}
+
+     iex> RecurringEvents.Date.numbered_week_day(~D[2017-02-04], :year, :backward)
+     {-48, :saturday}
+
+  """
+  def numbered_week_day(date, period \\ :month, order \\ :foreward)
+
+  def numbered_week_day(%{year: year, month: month, day: day}, period, order) do
+    numbered_week_day({year, month, day}, period, order)
+  end
+
+  def numbered_week_day({_year, _month, day} = date, :month, :foreward) do
+    day_of_the_week = week_day(date)
+    count = div(day - 1, 7) + 1
+    {count, day_of_the_week}
+  end
+
+  def numbered_week_day({_year, _month, day} = date, :month, :backward) do
+    day_of_the_week = week_day(date)
+    last_day = last_day_of_the_month(date)
+    count = div(last_day - day, 7) + 1
+    {-count, day_of_the_week}
+  end
+
+  def numbered_week_day({_year, _month, _day} = date, :year, :foreward) do
+    day_of_the_week = week_day(date)
+    count = div(day_of_the_year(date) - 1, 7) + 1
+    {count, day_of_the_week}
+  end
+
+  def numbered_week_day({year, _month, _day} = date, :year, :backward) do
+    day_of_the_week = week_day(date)
+    last_day = if(:calendar.is_leap_year(year), do: 366, else: 365)
+    count = div(last_day - day_of_the_year(date), 7) + 1
+    {-count, day_of_the_week}
+  end
+
+  @doc """
   Returns year day of provided date
 
   # Example
