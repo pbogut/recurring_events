@@ -3,6 +3,7 @@ defmodule RecurringEvents.Date do
   Helper module responsible for common date manipulations.
   """
 
+  @time {0, 0, 0}
   @week_days [
     :monday,
     :tuesday,
@@ -89,6 +90,25 @@ defmodule RecurringEvents.Date do
 
   def week_day({_year, _month, _day} = date) do
     @week_days |> Enum.at(:calendar.day_of_the_week(date) - 1)
+  end
+
+  @doc """
+  Returns year day of provided date
+
+  # Example
+
+     iex> RecurringEvents.Date.day_of_the_year(~D[2017-02-04])
+     35
+
+
+  """
+  def day_of_the_year(%{year: year, month: month, day: day}) do
+    day_of_the_year({year, month, day})
+  end
+
+  def day_of_the_year({year, _month, _day} = date) do
+    {days, _} = :calendar.time_difference({{year, 1, 1}, @time}, {date, @time})
+    days + 1
   end
 
   @doc """

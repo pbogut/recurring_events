@@ -72,4 +72,11 @@ defmodule RecurringEvents.DateTest do
     assert :sunday == Date.prev_week_day(:monday)
     assert :monday == Date.prev_week_day(:tuesday)
   end
+
+  test "can return day of the year" do
+    assert 1 == Date.day_of_the_year(~D[2017-01-01])
+    assert 100 == Date.day_of_the_year(~D[2017-04-10])
+    assert 300 == Date.day_of_the_year(~D[2017-10-27])
+    assert 365 == Date.day_of_the_year(~D[2017-12-31])
+  end
 end
