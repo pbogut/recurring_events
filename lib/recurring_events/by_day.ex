@@ -25,8 +25,7 @@ defmodule RecurringEvents.ByDay do
        ~D[2017-01-29]]
 
   """
-  def unfold(date, %{by_day: day} = rules)
-      when is_atom(day) do
+  def unfold(date, %{by_day: day} = rules) when not is_list(day) do
     unfold(date, %{rules | by_day: [day]})
   end
 
@@ -56,13 +55,13 @@ defmodule RecurringEvents.ByDay do
   defp year_inflate(date, %{by_day: days}) do
     year_start = %{date | day: 1, month: 1}
     year_end = %{date | day: 31, month: 12}
-    inflate(year_start, year_end, days)
+    inflate(year_start, year_end, days, :year)
   end
 
   defp month_inflate(date, %{by_day: days}) do
     month_start = %{date | day: 1}
     month_end = %{date | day: Date.last_day_of_the_month(date)}
-    inflate(month_start, month_end, days)
+    inflate(month_start, month_end, days, :month)
   end
 
   defp week_inflate(date, %{by_day: days} = rules) do
@@ -72,13 +71,43 @@ defmodule RecurringEvents.ByDay do
   end
 
   defp is_week_day_in(date, days) do
-    Enum.any?(days, &(Date.week_day(date) == &1))
+    Enum.any?(days, &is_week_day_eq(date, &1))
+  end
+
+  defp is_week_day_in(date, days, period) do
+    Enum.any?(days, &is_week_day_eq(date, &1, period))
+  end
+
+  defp is_week_day_eq(date, {_, week_day}) do
+    is_week_day_eq(date, week_day)
+  end
+
+  defp is_week_day_eq(date, week_day) do
+    Date.week_day(date) == week_day
+  end
+
+  defp is_week_day_eq(date, {n, _} = week_day, period) when n < 0 do
+    Date.numbered_week_day(date, period, :backward) == week_day
+  end
+
+  defp is_week_day_eq(date, {n, _} = week_day, period) when n > 0 do
+    Date.numbered_week_day(date, period, :foreward) == week_day
+  end
+
+  defp is_week_day_eq(date, week_day, _period) when is_atom(week_day) do
+    is_week_day_eq(date, week_day)
   end
 
   defp inflate(start_date, stop_date, days) do
     start_date
     |> Daily.unfold(%{until: stop_date, freq: :daily})
     |> Stream.filter(&is_week_day_in(&1, days))
+  end
+
+  defp inflate(start_date, stop_date, days, period) do
+    start_date
+    |> Daily.unfold(%{until: stop_date, freq: :daily})
+    |> Stream.filter(&is_week_day_in(&1, days, period))
   end
 
   defp week_start_date(date, rules) do

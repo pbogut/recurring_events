@@ -295,7 +295,6 @@ defmodule RR.IcalRrulTest do
         (1998 9:00 AM EST)January 2;February 6;March 6;April 3
         (1998 9:00 AM EDT)May 1;June 5
   """
-  @tag :pending
   test "Monthly on the 1st Friday for ten occurrences" do
     result =
       ~D[1997-09-05]
@@ -331,7 +330,6 @@ defmodule RR.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 5;October 3
         (1997 9:00 AM EST)November 7;December 5
   """
-  @tag :pending
   test "Monthly on the 1st Friday until December 24, 1997" do
     result =
       ~D[1997-09-05]
@@ -364,7 +362,6 @@ defmodule RR.IcalRrulTest do
         (1998 9:00 AM EST)January 4,25;March 1,29
         (1998 9:00 AM EDT)May 3,31
   """
-  @tag :pending
   test "Every other month on the 1st and last Sunday of the month for 10 occurrences" do
     result =
       ~D[1997-09-07]
@@ -397,14 +394,13 @@ defmodule RR.IcalRrulTest do
         (1997 9:00 AM EST)November 17;December 22
         (1998 9:00 AM EST)January 19;February 16
   """
-  @tag :pending
   test "Monthly on the second to last Monday of the month for 6 months" do
     result =
       ~D[1997-09-22]
       |> RR.unfold(%{
         freq: :monthly,
         count: 6,
-        by_day: [{-2, :monday}]
+        by_day: {-2, :monday}
       })
 
     expect =
@@ -687,7 +683,6 @@ defmodule RR.IcalRrulTest do
     ...
 
   """
-  @tag :pending
   test "Every 20th Monday of the year, forever" do
     result =
       ~D[1997-05-19]
@@ -703,7 +698,7 @@ defmodule RR.IcalRrulTest do
         {1999, 5, 17}
       ])
 
-    assert expect == result |> Enum.take(999)
+    assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
   @doc """

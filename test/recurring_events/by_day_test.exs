@@ -7,7 +7,7 @@ defmodule RecurringEvents.ByDayTest do
   @wednesday ~D[2017-01-25]
   @monday ~D[2017-01-23]
 
-  test "can be filetered by day of the week when freq: :daily" do
+  test "can be filtered by day of the week when freq: :daily" do
     assert [@monday] ==
              @monday
              |> ByDay.unfold(%{freq: :daily, by_day: :monday})
@@ -25,6 +25,13 @@ defmodule RecurringEvents.ByDayTest do
     assert [@wednesday] ==
              @wednesday
              |> ByDay.unfold(%{freq: :weekly, by_day: :wednesday})
+             |> Enum.to_list()
+  end
+
+  test "can be inflate by numbered day of the week when freq: :monthly" do
+    assert [~D[2017-01-09]] ==
+             @wednesday
+             |> ByDay.unfold(%{freq: :monthly, by_day: {2, :monday}})
              |> Enum.to_list()
   end
 
