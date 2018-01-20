@@ -28,6 +28,7 @@ defmodule RecurringEvents do
       This rule can also accept tuples with occurrence number when used with
       `:monthly` or `:yearly` frequency (e.g. `{3, :monday}` for 3rd Monday or
       `{-2, :tuesday}` for 2nd to last Tuesday)
+    - `:by_month_day` - month day number or list of month day numbers
     - `:week_start` - start day of the week, see `:by_day` for possible values
 
   For more usage examples, please, refer to
@@ -35,7 +36,18 @@ defmodule RecurringEvents do
 
   """
 
-  alias RecurringEvents.{Date, Guards, Yearly, Monthly, Weekly, Daily, ByMonth, ByDay}
+  alias RecurringEvents.{
+    Date,
+    Guards,
+    Yearly,
+    Monthly,
+    Weekly,
+    Daily,
+    ByMonth,
+    ByDay,
+    ByMonthDay
+  }
+
   use Guards
 
   @doc """
@@ -82,6 +94,7 @@ defmodule RecurringEvents do
     |> get_freq_module(freq).unfold(rules)
     |> Stream.flat_map(&ByMonth.unfold(&1, rules))
     |> Stream.flat_map(&ByDay.unfold(&1, rules))
+    |> Stream.flat_map(&ByMonthDay.unfold(&1, rules))
     |> drop_before(date)
     |> prepend(date)
     |> drop_after(rules)

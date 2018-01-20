@@ -427,10 +427,9 @@ defmodule RR.IcalRrulTest do
         (1998 9:00 AM EST)January 29;February 26
     ...
   """
-  @tag :pending
   test "Monthly on the third to the last day of the month, forever" do
     result =
-      ~D[1997-09-22]
+      ~D[1997-09-28]
       |> RR.unfold(%{
         freq: :monthly,
         by_month_day: -3
@@ -459,7 +458,6 @@ defmodule RR.IcalRrulTest do
         (1997 9:00 AM EST)November 2,15;December 2,15
         (1998 9:00 AM EST)January 2,15
   """
-  @tag :pending
   test "Monthly on the 2nd and 15th of the month for 10 occurrences" do
     result =
       ~D[1997-09-02]
@@ -491,7 +489,6 @@ defmodule RR.IcalRrulTest do
         (1997 9:00 AM EST)October 31;November 1,30;December 1,31
         (1998 9:00 AM EST)January 1,31;February 1
   """
-  @tag :pending
   test "Monthly on the first and last day of the month for 10 occurrences" do
     result =
       ~D[1997-09-30]
@@ -525,10 +522,9 @@ defmodule RR.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 10,11,12,13,14,15
         (1999 9:00 AM EST)March 10,11,12,13
   """
-  @tag :pending
   test "Every 18 months on the 10th thru 15th of the month for 10 occurrences" do
     result =
-      ~D[1997-09-30]
+      ~D[1997-09-10]
       |> RR.unfold(%{
         freq: :monthly,
         interval: 18,
@@ -805,10 +801,11 @@ defmodule RR.IcalRrulTest do
         (2000 9:00 AM EDT)October 13
     ...
   """
+  # EXDATE would have to be impleent for this rule, not sure if want to do that
   @tag :pending
   test "Every Friday the 13th, forever" do
     result =
-      ~D[1997-05-12]
+      ~D[1997-09-02]
       |> RR.unfold(%{
         freq: :monthly,
         by_day: :friday,
@@ -840,10 +837,9 @@ defmodule RR.IcalRrulTest do
         (1998 9:00 AM EDT)April 11;May 9;June 13...
     ...
   """
-  @tag :pending
   test "The first Saturday that follows the first Sunday of the month, forever" do
     result =
-      ~D[1997-05-12]
+      ~D[1997-09-13]
       |> RR.unfold(%{
         freq: :monthly,
         by_day: :saturday,
@@ -880,7 +876,6 @@ defmodule RR.IcalRrulTest do
         (2004 9:00 AM EST)November 2
     ...
   """
-  @tag :pending
   test "Every four years, the first Tuesday after a Monday in November, forever (U.S. Presidential Election day)" do
     result =
       ~D[1996-11-05]
