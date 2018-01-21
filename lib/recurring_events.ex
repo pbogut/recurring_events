@@ -47,6 +47,7 @@ defmodule RecurringEvents do
     Daily,
     ByMonth,
     ByWeekNumber,
+    ByYearDay,
     ByMonthDay,
     ByDay
   }
@@ -97,6 +98,7 @@ defmodule RecurringEvents do
     |> get_freq_module(freq).unfold(rules)
     |> Stream.flat_map(&ByMonth.unfold(&1, rules))
     |> Stream.flat_map(&ByWeekNumber.unfold(&1, rules))
+    |> Stream.flat_map(&ByYearDay.unfold(&1, rules))
     |> Stream.flat_map(&ByMonthDay.unfold(&1, rules))
     |> Stream.flat_map(&ByDay.unfold(&1, rules))
     |> drop_before(date)

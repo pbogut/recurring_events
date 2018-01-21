@@ -639,7 +639,6 @@ defmodule RR.IcalRrulTest do
         (2003 9:00 AM EDT)April 10;July 19
         (2006 9:00 AM EST)January 1
   """
-  @tag :pending
   test "Every 3rd year on the 1st, 100th and 200th day for 10 occurrences" do
     result =
       ~D[1997-01-01]
