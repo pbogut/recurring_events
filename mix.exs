@@ -2,18 +2,20 @@ defmodule RecurringEvents.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :recurring_events,
-     version: "0.1.0",
-     elixir: "~> 1.3",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     package: package(),
-     description: description(),
-     docs: [
-       main: RecurringEvents,
-       source_url: "https://github.com/pbogut/recurring_events"
-     ],
-     deps: deps()]
+    [
+      app: :recurring_events,
+      version: "0.2.0",
+      elixir: "~> 1.3",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      package: package(),
+      description: description(),
+      docs: [
+        main: RecurringEvents,
+        source_url: "https://github.com/pbogut/recurring_events"
+      ],
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application
@@ -37,9 +39,11 @@ defmodule RecurringEvents.Mixfile do
   end
 
   defp package do
-    [maintainers: ["Pawel Bogut"],
-     licenses: ["MIT"],
-     links: %{github: "https://github.com/pbogut/recurring_events"}]
+    [
+      maintainers: ["Pawel Bogut"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/pbogut/recurring_events"}
+    ]
   end
 
   defp description do

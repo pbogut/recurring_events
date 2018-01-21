@@ -3,7 +3,7 @@
 
 # RecurringEvents
 
-*RecurringEvents* is an Elixir library providing recurring events support
+_RecurringEvents_ is an Elixir library providing recurring events support
 (duh!).
 
 ## Documentation
@@ -14,10 +14,10 @@ API documentation is available at [https://hexdocs.pm/recurring_events](https://
 
 The package can be installed as:
 
-  Add `recurring_events` to your list of dependencies in `mix.exs`:
+Add `recurring_events` to your list of dependencies in `mix.exs`:
 
-    ```elixir
+    ```
     def deps do
-      [{:recurring_events, "~> 0.1.0"}]
+      [{:recurring_events, "~> 0.2.0"}]
     end
     ```
