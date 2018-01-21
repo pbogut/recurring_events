@@ -22,6 +22,7 @@ defmodule RecurringEvents do
     - `:interval` - how often recurrence rule repeats
     - `:freq` - this is the only required rule, possible values: `:yearly`,
       `:monthly`, `:weekly`, `:daily`
+    - `:week_start` - start day of the week, see `:by_day` for possible values
     - `:by_month` - month number or list of month numbers
     - `:by_day` - day or list of days, possible values: `:monday`, `:tuesday`,
       `:wednesday`, `:thursday`, `:friday`, `:saturday`, `:sunday`.
@@ -29,7 +30,8 @@ defmodule RecurringEvents do
       `:monthly` or `:yearly` frequency (e.g. `{3, :monday}` for 3rd Monday or
       `{-2, :tuesday}` for 2nd to last Tuesday)
     - `:by_month_day` - month day number or list of month day numbers
-    - `:week_start` - start day of the week, see `:by_day` for possible values
+    - `:by_week_number` - number of the week in a year, first week should have at
+      least 4 days, `:week_start` may affect result of this rule
 
   For more usage examples, please, refer to
   [tests](https://github.com/pbogut/recurring_events/blob/master/test/ical_rrul_test.exs)
@@ -44,8 +46,9 @@ defmodule RecurringEvents do
     Weekly,
     Daily,
     ByMonth,
-    ByDay,
-    ByMonthDay
+    ByWeekNumber,
+    ByMonthDay,
+    ByDay
   }
 
   use Guards
@@ -93,6 +96,7 @@ defmodule RecurringEvents do
     date
     |> get_freq_module(freq).unfold(rules)
     |> Stream.flat_map(&ByMonth.unfold(&1, rules))
+    |> Stream.flat_map(&ByWeekNumber.unfold(&1, rules))
     |> Stream.flat_map(&ByMonthDay.unfold(&1, rules))
     |> Stream.flat_map(&ByDay.unfold(&1, rules))
     |> drop_before(date)

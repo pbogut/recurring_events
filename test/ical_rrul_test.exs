@@ -708,7 +708,6 @@ defmodule RR.IcalRrulTest do
         (1999 9:00 AM EDT)May 17
     ...
   """
-  @tag :pending
   test "Monday of week number 20 (where the default start of the week is Monday), forever" do
     result =
       ~D[1997-05-12]
@@ -725,7 +724,7 @@ defmodule RR.IcalRrulTest do
         {1999, 5, 17}
       ])
 
-    assert expect == result |> Enum.take(999)
+    assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
   @doc """
