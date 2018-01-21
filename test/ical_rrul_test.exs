@@ -15,7 +15,7 @@ defmodule RR.IcalRrulTest do
       ~D[1997-09-02]
       |> RR.unfold(%{freq: :daily, count: 10})
 
-    assert date_expand({1997, 09, Enum.to_list(2..11)}) == result |> Enum.take(999)
+    assert date_expand({1997, 09, 2..11}) == result |> Enum.take(999)
   end
 
   @doc """
@@ -33,10 +33,10 @@ defmodule RR.IcalRrulTest do
       |> RR.unfold(%{freq: :daily, until: ~D[1997-12-24]})
 
     assert date_expand([
-             {1997, 09, Enum.to_list(2..30)},
-             {1997, 10, Enum.to_list(1..31)},
-             {1997, 11, Enum.to_list(1..30)},
-             {1997, 12, Enum.to_list(1..23)},
+             {1997, 09, 2..30},
+             {1997, 10, 1..31},
+             {1997, 11, 1..30},
+             {1997, 12, 1..23},
              # time is not supported yet, so include last
              {1997, 12, 24}
            ]) == result |> Enum.take(999)
@@ -110,9 +110,9 @@ defmodule RR.IcalRrulTest do
 
     expect =
       date_expand([
-        {1998, 1, Enum.to_list(1..31)},
-        {1999, 1, Enum.to_list(1..31)},
-        {2000, 1, Enum.to_list(1..31)}
+        {1998, 1, 1..31},
+        {1999, 1, 1..31},
+        {2000, 1, 1..31}
       ])
 
     assert expect == result |> Enum.take(expect |> Enum.count())
@@ -592,7 +592,7 @@ defmodule RR.IcalRrulTest do
 
     expect =
       date_expand([
-        {1997..2001 |> Enum.to_list(), [6, 7] |> Enum.to_list(), 10}
+        {1997..2001, [6, 7], 10}
       ])
 
     assert expect == result |> Enum.take(999)
@@ -617,9 +617,9 @@ defmodule RR.IcalRrulTest do
     expect =
       date_expand([
         {1997, 3, 10},
-        {1999, [1, 2, 3] |> Enum.to_list(), 10},
-        {2001, [1, 2, 3] |> Enum.to_list(), 10},
-        {2003, [1, 2, 3] |> Enum.to_list(), 10}
+        {1999, [1, 2, 3], 10},
+        {2001, [1, 2, 3], 10},
+        {2003, [1, 2, 3], 10}
       ])
 
     assert expect == result |> Enum.take(999)
@@ -746,9 +746,9 @@ defmodule RR.IcalRrulTest do
 
     expect =
       date_expand([
-        {1997, 3, Enum.to_list([13, 20, 27])},
-        {1998, 3, Enum.to_list([5, 12, 19, 26])},
-        {1999, 3, Enum.to_list([4, 11, 18, 25])}
+        {1997, 3, [13, 20, 27]},
+        {1998, 3, [5, 12, 19, 26]},
+        {1999, 3, [4, 11, 18, 25]}
       ])
 
     assert expect == result |> Enum.take(expect |> Enum.count())
@@ -775,15 +775,15 @@ defmodule RR.IcalRrulTest do
 
     expect =
       date_expand([
-        {1997, 6, Enum.to_list([5, 12, 19, 26])},
-        {1997, 7, Enum.to_list([3, 10, 17, 24, 31])},
-        {1997, 8, Enum.to_list([7, 14, 21, 28])},
-        {1998, 6, Enum.to_list([4, 11, 18, 25])},
-        {1998, 7, Enum.to_list([2, 9, 16, 23, 30])},
-        {1998, 8, Enum.to_list([6, 13, 20, 27])},
-        {1999, 6, Enum.to_list([3, 10, 17, 24])},
-        {1999, 7, Enum.to_list([1, 8, 15, 22, 29])},
-        {1999, 8, Enum.to_list([5, 12, 19, 26])}
+        {1997, 6, [5, 12, 19, 26]},
+        {1997, 7, [3, 10, 17, 24, 31]},
+        {1997, 8, [7, 14, 21, 28]},
+        {1998, 6, [4, 11, 18, 25]},
+        {1998, 7, [2, 9, 16, 23, 30]},
+        {1998, 8, [6, 13, 20, 27]},
+        {1999, 6, [3, 10, 17, 24]},
+        {1999, 7, [1, 8, 15, 22, 29]},
+        {1999, 8, [5, 12, 19, 26]}
       ])
 
     assert expect == result |> Enum.take(expect |> Enum.count())
@@ -1109,7 +1109,7 @@ defmodule RR.IcalRrulTest do
 
     monday_expect =
       date_expand([
-        {1997, 8, Enum.to_list([5, 10, 19, 24])}
+        {1997, 8, [5, 10, 19, 24]}
       ])
 
     sunday_result =
@@ -1118,7 +1118,7 @@ defmodule RR.IcalRrulTest do
 
     sunday_expect =
       date_expand([
-        {1997, 8, Enum.to_list([5, 17, 19, 31])}
+        {1997, 8, [5, 17, 19, 31]}
       ])
 
     refute monday_result == sunday_result
@@ -1130,20 +1130,19 @@ defmodule RR.IcalRrulTest do
     Enum.flat_map(date_list, &date_expand/1)
   end
 
-  def date_expand({year, months, days}) when not is_list(year) do
+  def date_expand({year, months, days}) when is_integer(year) do
     date_expand({[year], months, days})
   end
 
-  def date_expand({years, month, days}) when not is_list(month) do
+  def date_expand({years, month, days}) when is_integer(month) do
     date_expand({years, [month], days})
   end
 
-  def date_expand({years, months, day}) when not is_list(day) do
+  def date_expand({years, months, day}) when is_integer(day) do
     date_expand({years, months, [day]})
   end
 
-  def date_expand({years, months, days})
-      when is_list(years) and is_list(months) and is_list(days) do
+  def date_expand({years, months, days}) do
     for year <- years,
         month <- months,
         day <- days,
