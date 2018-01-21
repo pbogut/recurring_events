@@ -3,7 +3,7 @@ defmodule RecurringEvents.ByMonth do
   Handles `:by_month` rule
   """
 
-  alias RecurringEvents.{Date, Guards}
+  alias RecurringEvents.{Date, Guards, CommonBy}
   use Guards
 
   @doc """
@@ -33,21 +33,16 @@ defmodule RecurringEvents.ByMonth do
     inflate(date, rules)
   end
 
-  def unfold(date, %{by_month: _months, freq: freq} = rules)
-      when is_freq_valid(freq) do
-    filter(date, rules)
+  def unfold(date, %{by_month: months, freq: freq}) when is_freq_valid(freq) do
+    CommonBy.filter(date, &is_month_in(&1, months))
   end
 
   def unfold(date, %{}) do
     [date]
   end
 
-  defp filter(date, %{by_month: months}) do
-    if Enum.any?(months, fn month -> month == date.month end) do
-      [date]
-    else
-      []
-    end
+  defp is_month_in(date, months) do
+    Enum.any?(months, fn month -> month == date.month end)
   end
 
   defp inflate(date, %{by_month: months}) do
