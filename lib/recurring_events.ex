@@ -93,8 +93,8 @@ defmodule RecurringEvents do
     date
     |> get_freq_module(freq).unfold(rules)
     |> Stream.flat_map(&ByMonth.unfold(&1, rules))
-    |> Stream.flat_map(&ByDay.unfold(&1, rules))
     |> Stream.flat_map(&ByMonthDay.unfold(&1, rules))
+    |> Stream.flat_map(&ByDay.unfold(&1, rules))
     |> drop_before(date)
     |> prepend(date)
     |> drop_after(rules)

@@ -31,6 +31,7 @@ defmodule RecurringEvents.ByDay do
 
   def unfold(date, rules) do
     case rules do
+      %{by_day: _days, by_month_day: _} -> filter(date, rules)
       %{by_day: _days, by_month: _} -> month_inflate(date, rules)
       %{by_day: _days, freq: :daily} -> filter(date, rules)
       %{by_day: _days, freq: :weekly} -> week_inflate(date, rules)

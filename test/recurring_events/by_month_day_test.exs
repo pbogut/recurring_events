@@ -47,18 +47,6 @@ defmodule RecurringEvents.ByMonthDayTest do
              |> Enum.to_list()
   end
 
-  test "can be filtered when by_day: present" do
-    assert [] ==
-             @wednesday
-             |> ByMonthDay.unfold(%{by_day: [], freq: :monthly, by_month_day: [1, 15, -1]})
-             |> Enum.to_list()
-
-    assert [@wednesday] ==
-             @wednesday
-             |> ByMonthDay.unfold(%{by_day: nil, freq: :monthly, by_month_day: 25})
-             |> Enum.to_list()
-  end
-
   test "can be inflate by year when freq: yearly" do
     assert [
              ~D[2017-01-01],
