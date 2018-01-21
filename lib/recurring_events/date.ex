@@ -137,6 +137,83 @@ defmodule RecurringEvents.Date do
   end
 
   @doc """
+  Returns week number of provided date
+  Minimum 4 days of week are required in the first week, `:week_start`
+  can be provided
+
+  # Example
+
+     iex> RecurringEvents.Date.week_number(~D[2017-01-05])
+     1
+     iex> RecurringEvents.Date.week_number(~D[2017-01-05], reversed: true)
+     -52
+
+
+  """
+
+  def week_number(date, options \\ [])
+
+  def week_number(%{year: year, month: month, day: day}, options) do
+    week_number({year, month, day}, options)
+  end
+
+  def week_number({year, _month, _day} = date, reversed: false, week_start: week_start) do
+    year_start_day = week_day({year, 1, 1})
+    diff = week_day_diff(year_start_day, week_start)
+    shift_week = if(diff < 4, do: -1, else: 0)
+
+    max_weeks = weeks_count(year, week_start)
+    week_number = div(day_of_the_year(date) - 1 - diff + 7, 7) + 1 + shift_week
+
+    cond do
+      week_number == 0 -> weeks_count(year - 1, week_start)
+      max_weeks < week_number -> week_number - max_weeks
+      true -> week_number
+    end
+  end
+
+  def week_number({year, month, _day} = date, reversed: true, week_start: week_start) do
+    number = week_number(date, reversed: false, week_start: week_start)
+
+    cond do
+      month == 1 and number > 25 -> number - 1 - weeks_count(year - 1, week_start)
+      month == 12 and number < 25 -> number - 1 - weeks_count(year + 1, week_start)
+      true -> number - 1 - weeks_count(year, week_start)
+    end
+  end
+
+  def week_number(date, options) do
+    reversed = Keyword.get(options, :reversed, false)
+    week_start = Keyword.get(options, :week_start, :monday)
+    week_number(date, reversed: reversed, week_start: week_start)
+  end
+
+  defp weeks_count(year, week_start) do
+    year_start_day = week_day({year, 1, 1})
+    diff = week_day_diff(year_start_day, week_start)
+    has_53 = diff == 4 or (diff == 5 and :calendar.is_leap_year(year))
+
+    if(has_53, do: 53, else: 52)
+  end
+
+  defp week_day_diff(day1, day2) when is_atom(day1) and is_atom(day2) do
+    week_day_diff(
+      Enum.find_index(@week_days, &(day1 == &1)),
+      Enum.find_index(@week_days, &(day2 == &1))
+    )
+  end
+
+  defp week_day_diff(day1_no, day2_no) when day1_no < day2_no do
+    day2_no - day1_no
+  end
+
+  defp week_day_diff(day1_no, day2_no) when day1_no > day2_no do
+    day2_no - day1_no + 7
+  end
+
+  defp week_day_diff(day1_no, day2_no) when day1_no == day2_no, do: 0
+
+  @doc """
   Returns year day of provided date
 
   # Example
