@@ -25,18 +25,22 @@ defmodule RecurringEvents.ByDay do
        ~D[2017-01-29]]
 
   """
-  def unfold(date, %{by_day: day} = rules) when not is_list(day) do
-    unfold(date, %{rules | by_day: [day]})
+  def unfold(date, %{by_day: day} = rules, action) when not is_list(day) do
+    unfold(date, %{rules | by_day: [day]}, action)
   end
 
-  def unfold(date, rules) do
+  def unfold(date, rules, :filter) do
     case rules do
-      %{by_day: days, by_week_number: _} ->
+      %{by_day: days} ->
         CommonBy.filter(date, &is_week_day_in(&1, days))
 
-      %{by_day: days, by_month_day: _} ->
-        CommonBy.filter(date, &is_week_day_in(&1, days))
+      _ ->
+        [date]
+    end
+  end
 
+  def unfold(date, rules, :inflate) do
+    case rules do
       %{by_day: days, by_month: _} ->
         CommonBy.inflate(date, rules, &is_week_day_in(&1, days, :month))
 
@@ -48,9 +52,6 @@ defmodule RecurringEvents.ByDay do
 
       %{by_day: days, freq: :yearly} ->
         CommonBy.inflate(date, rules, &is_week_day_in(&1, days, :year))
-
-      %{by_day: days, freq: :daily} ->
-        CommonBy.filter(date, &is_week_day_in(&1, days))
 
       _ ->
         [date]

@@ -20,29 +20,32 @@ defmodule RecurringEvents.ByWeekNumber do
        ~D[2017-01-20], ~D[2017-01-21], ~D[2017-01-22]]
 
   """
-  def unfold(date, %{by_week_number: number} = rules)
+  def unfold(date, %{by_week_number: number} = rules, action)
       when is_integer(number) do
-    unfold(date, %{rules | by_week_number: [number]})
+    unfold(date, %{rules | by_week_number: [number]}, action)
   end
 
-  def unfold(date, rules) do
+  def unfold(date, rules, :filter) do
     week_start = Map.get(rules, :week_start, :monday)
 
     case rules do
-      %{by_week_number: numbers, by_month: _} ->
+      %{by_week_number: numbers} ->
         CommonBy.filter(date, &is_week_no_in(&1, numbers, week_start))
 
+      _ ->
+        [date]
+    end
+  end
+
+  def unfold(date, rules, :inflate) do
+    week_start = Map.get(rules, :week_start, :monday)
+
+    case rules do
       %{by_week_number: numbers, freq: :monthly} ->
         CommonBy.inflate(date, rules, &is_week_no_in(&1, numbers, week_start))
 
       %{by_week_number: numbers, freq: :yearly} ->
         CommonBy.inflate(date, rules, &is_week_no_in(&1, numbers, week_start))
-
-      %{by_week_number: numbers, freq: :daily} ->
-        CommonBy.filter(date, &is_week_no_in(&1, numbers, week_start))
-
-      %{by_week_number: numbers, freq: :weekly} ->
-        CommonBy.filter(date, &is_week_no_in(&1, numbers, week_start))
 
       _ ->
         [date]

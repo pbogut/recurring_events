@@ -24,20 +24,20 @@ defmodule RecurringEvents.ByMonth do
       [~D[2017-01-22]]
 
   """
-  def unfold(date, %{by_month: month} = rules)
+  def unfold(date, %{by_month: month} = rules, action)
       when is_integer(month) do
-    unfold(date, %{rules | by_month: [month]})
+    unfold(date, %{rules | by_month: [month]}, action)
   end
 
-  def unfold(date, %{by_month: _months, freq: :yearly} = rules) do
+  def unfold(date, %{by_month: _months, freq: :yearly} = rules, :inflate) do
     inflate(date, rules)
   end
 
-  def unfold(date, %{by_month: months, freq: freq}) when is_freq_valid(freq) do
+  def unfold(date, %{by_month: months, freq: freq}, :filter) when is_freq_valid(freq) do
     CommonBy.filter(date, &is_month_in(&1, months))
   end
 
-  def unfold(date, %{}) do
+  def unfold(date, %{}, _) do
     [date]
   end
 

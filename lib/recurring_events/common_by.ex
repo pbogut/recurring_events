@@ -5,6 +5,10 @@ defmodule RecurringEvents.CommonBy do
     Stream.filter(dates, filter_fun)
   end
 
+  def filter(dates, filter_fun) when is_function(dates) do
+    Stream.filter(dates, filter_fun)
+  end
+
   def filter(date, filter_fun) do
     if filter_fun.(date) do
       [date]
@@ -16,6 +20,10 @@ defmodule RecurringEvents.CommonBy do
   def inflate(date, %{by_month: _}, filter) do
     inflate_month(date, filter)
   end
+
+  # def inflate(date, %{by_week_number: _} = rules, filter) do
+  # inflate_week(date, rules, filter)
+  # end
 
   def inflate(date, %{freq: :weekly} = rules, filter) do
     inflate_week(date, rules, filter)

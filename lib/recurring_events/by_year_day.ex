@@ -13,22 +13,29 @@ defmodule RecurringEvents.ByYearDay do
 
   # Examples
 
-      iex> RecurringEvents.ByYearDay.unfold(~D[2017-01-22],
-      ...>       %{freq: :yearly, by_year_day: [1,100]})
-      ...> |> Enum.take(10)
-      [~D[2017-01-01], ~D[2017-04-10]]
+  #   iex> RecurringEvents.ByYearDay.unfold(~D[2017-01-22],
+  #   ...>       %{freq: :yearly, by_year_day: [1,100]})
+  #   ...> |> Enum.take(10)
+  #   [~D[2017-01-01], ~D[2017-04-10]]
 
   """
-  def unfold(date, %{by_year_day: number} = rules)
+  def unfold(date, %{by_year_day: number} = rules, action)
       when is_integer(number) do
-    unfold(date, %{rules | by_year_day: [number]})
+    unfold(date, %{rules | by_year_day: [number]}, action)
   end
 
-  def unfold(date, rules) do
+  def unfold(date, rules, :filter) do
     case rules do
-      %{by_year_day: numbers, freq: :daily} ->
+      %{by_year_day: numbers} ->
         CommonBy.filter(date, &is_year_day_in(&1, numbers))
 
+      _ ->
+        [date]
+    end
+  end
+
+  def unfold(date, rules, :inflate) do
+    case rules do
       %{by_year_day: numbers, by_month: _} ->
         CommonBy.inflate(date, rules, &is_year_day_in(&1, numbers))
 
