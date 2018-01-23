@@ -967,7 +967,6 @@ defmodule RR.IcalRrulTest do
 
     ==> (September 2, 1997 EDT)09:00,12:00,15:00
   """
-  @tag :pending
   test "Every 3 hours from 9:00 AM to 5:00 PM on a specific day" do
     result =
       ~N[1997-09-02 09:00:00]
@@ -978,7 +977,7 @@ defmodule RR.IcalRrulTest do
       })
 
     expect =
-      datetime_expand([
+      date_expand([
         {{1997, 9, 2}, {9, 0, 0}},
         {{1997, 9, 2}, {12, 0, 0}},
         {{1997, 9, 2}, {15, 0, 0}}
@@ -995,7 +994,6 @@ defmodule RR.IcalRrulTest do
 
     ==> (September 2, 1997 EDT)09:00,09:15,09:30,09:45,10:00,10:15
   """
-  @tag :pending
   test "Every 15 minutes for 6 occurrences" do
     result =
       ~N[1997-09-02 09:00:00]
@@ -1006,7 +1004,7 @@ defmodule RR.IcalRrulTest do
       })
 
     expect =
-      datetime_expand([
+      date_expand([
         {{1997, 9, 2}, {9, [0, 15, 30, 45], 0}},
         {{1997, 9, 2}, {10, [0, 15], 0}}
       ])
@@ -1022,7 +1020,6 @@ defmodule RR.IcalRrulTest do
 
     ==> (September 2, 1997 EDT)09:00,10:30;12:00;13:30
   """
-  @tag :pending
   test "Every hour and a half for 4 occurrences" do
     result =
       ~N[1997-09-02 09:00:00]
@@ -1033,7 +1030,7 @@ defmodule RR.IcalRrulTest do
       })
 
     expect =
-      datetime_expand([
+      date_expand([
         {{1997, 9, 2}, {9, 0, 0}},
         {{1997, 9, 2}, {10, 30, 0}},
         {{1997, 9, 2}, {12, 0, 0}},
@@ -1069,7 +1066,7 @@ defmodule RR.IcalRrulTest do
       })
 
     expect =
-      datetime_expand([
+      date_expand([
         {{1997, 9, [2, 3]}, {[9, 10, 11, 12, 13, 14, 15, 16], [0, 20, 40], 0}}
       ])
 
@@ -1122,30 +1119,29 @@ defmodule RR.IcalRrulTest do
     assert sunday_expect == sunday_result |> Enum.take(sunday_expect |> Enum.count())
   end
 
+  def listify({a, b, c}), do: {listify(a), listify(b), listify(c)}
+  def listify({a, b}), do: {listify(a), listify(b)}
+  def listify(a) when is_integer(a), do: [a]
+  def listify(a), do: a
+
   def date_expand(date_list) when is_list(date_list) do
     Enum.flat_map(date_list, &date_expand/1)
   end
 
-  def date_expand({year, months, days}) when is_integer(year) do
-    date_expand({[year], months, days})
-  end
-
-  def date_expand({years, month, days}) when is_integer(month) do
-    date_expand({years, [month], days})
-  end
-
-  def date_expand({years, months, day}) when is_integer(day) do
-    date_expand({years, months, [day]})
+  def date_expand({{years, months, days}, {hours, minutes, seconds}}) do
+    for year <- listify(years),
+        month <- listify(months),
+        day <- listify(days),
+        hour <- listify(hours),
+        minute <- listify(minutes),
+        second <- listify(seconds),
+        do: NaiveDateTime.from_erl!({{year, month, day}, {hour, minute, second}})
   end
 
   def date_expand({years, months, days}) do
-    for year <- years,
-        month <- months,
-        day <- days,
+    for year <- listify(years),
+        month <- listify(months),
+        day <- listify(days),
         do: Date.from_erl!({year, month, day})
-  end
-
-  def datetime_expand(list) do
-    list
   end
 end

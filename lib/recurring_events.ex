@@ -46,8 +46,8 @@ defmodule RecurringEvents do
     Guards,
     Yearly,
     Monthly,
+    Frequency,
     Weekly,
-    Daily,
     ByPump,
     ByChecker
   }
@@ -139,7 +139,10 @@ defmodule RecurringEvents do
   defp get_freq_module(:yearly), do: Yearly
   defp get_freq_module(:monthly), do: Monthly
   defp get_freq_module(:weekly), do: Weekly
-  defp get_freq_module(:daily), do: Daily
+  defp get_freq_module(:daily), do: Frequency
+  defp get_freq_module(:hourly), do: Frequency
+  defp get_freq_module(:minutely), do: Frequency
+  defp get_freq_module(:secondly), do: Frequency
 
   def listify(rules) when is_map(rules) do
     Enum.reduce(@listify, rules, fn key, rules ->

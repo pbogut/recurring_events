@@ -1,5 +1,5 @@
 defmodule RecurringEvents.ByPump do
-  alias RecurringEvents.{Date, Daily}
+  alias RecurringEvents.{Date, Frequency}
 
   def inflate(date, %{by_day: _} = rules, filter), do: do_inflate(date, rules, filter)
   def inflate(date, %{by_month_day: _} = rules, filter), do: do_inflate(date, rules, filter)
@@ -40,7 +40,7 @@ defmodule RecurringEvents.ByPump do
 
   defp inflate_period(start_date, stop_date, filter) do
     start_date
-    |> Daily.unfold(%{until: stop_date, freq: :daily})
+    |> Frequency.unfold(%{until: stop_date, freq: :daily})
     |> Stream.filter(filter)
   end
 

@@ -26,10 +26,30 @@ defmodule RecurringEvents.Date do
       ~D[2013-02-04]
 
   """
+  def shift_date(date, count, period)
+      when period == :hours or period == :minutes or period == :seconds do
+    {
+      {new_year, new_month, new_day},
+      {new_hour, new_minute, new_second}
+    } = shift_time(date, count, period)
+
+    %{
+      date
+      | year: new_year,
+        month: new_month,
+        day: new_day,
+        hour: new_hour,
+        minute: new_minute,
+        second: new_second
+    }
+  end
+
   def shift_date(%{year: year, month: month, day: day} = date, count, period) do
     {new_year, new_month, new_day} = shift_date({year, month, day}, count, period)
     %{date | year: new_year, month: new_month, day: new_day}
   end
+
+  def shift_date(date, 0, _), do: date
 
   def shift_date({_year, _month, _day} = date, count, :days) do
     date
@@ -56,6 +76,42 @@ defmodule RecurringEvents.Date do
 
   def shift_date({year, month, day}, count, :years) do
     {year + count, month, day}
+  end
+
+  # defp shift_time(%{hour: hour, minute: minute, second: second} = date, count, period) do
+  # {new_hour, new_minute, new_second} = shift_date({hour, minute, second}, count, period)
+  # %{date | hour: new_hour, minute: new_minute, second: new_second}
+  # end
+
+  defp shift_time(
+         %{year: _, month: _, day: _, hour: _, minute: _, second: _} = date,
+         count,
+         period
+       ) do
+    shift_time(to_erl_datetime(date), count, period)
+  end
+
+  defp shift_time(datetime, 0, _), do: datetime
+
+  defp shift_time({date, {hour, minute, second}}, count, :hours) do
+    days = div(hour + count, 24)
+    new_hour = rem(hour + count, 24)
+
+    {shift_date(date, days, :days), {new_hour, minute, second}}
+  end
+
+  defp shift_time({date, {_, minute, second} = time}, count, :minutes) do
+    hours = div(minute + count, 60)
+    new_minute = rem(minute + count, 60)
+    {new_date, {new_hour, _, _}} = shift_time({date, time}, hours, :hours)
+    {new_date, {new_hour, new_minute, second}}
+  end
+
+  defp shift_time({date, {_, _, second} = time}, count, :seconds) do
+    minutes = div(second + count, 60)
+    new_second = rem(second + count, 60)
+    {new_date, {new_hour, new_minute, _}} = shift_time({date, time}, minutes, :minutes)
+    {new_date, {new_hour, new_minute, new_second}}
   end
 
   @doc """
@@ -336,5 +392,17 @@ defmodule RecurringEvents.Date do
       true ->
         :lt
     end
+  end
+
+  defp to_erl_datetime(date) do
+    {to_erl_date(date), to_erl_time(date)}
+  end
+
+  defp to_erl_date(%{year: year, month: month, day: day}) do
+    {year, month, day}
+  end
+
+  defp to_erl_time(%{hour: hour, minute: minute, second: second}) do
+    {hour, minute, second}
   end
 end
