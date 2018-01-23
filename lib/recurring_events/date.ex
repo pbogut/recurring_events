@@ -278,7 +278,7 @@ defmodule RecurringEvents.Date do
   end
 
   @doc """
-  Compares two dates, time if provided will be ignored.
+  Compares two dates or datetimes (it ignores tz)
 
   # Example
 
@@ -288,11 +288,39 @@ defmodule RecurringEvents.Date do
       iex> RecurringEvents.Date.compare(~D[2017-02-01], ~D[2017-02-05])
       :lt
 
-      iex> RecurringEvents.Date.compare(~N[2017-02-05 12:00:00],
-      ...>                              ~N[2017-02-05 18:21:11])
+      iex> RecurringEvents.Date.compare(~D[2017-02-05], ~D[2017-02-05])
       :eq
 
+      iex> RecurringEvents.Date.compare(~N[2017-02-05 12:00:00],
+      ...>                              ~N[2017-02-05 18:21:11])
+      :lt
+
   """
+
+  def compare(
+        %{
+          year: y1,
+          month: m1,
+          day: d1,
+          hour: h1,
+          minute: i1,
+          second: s1
+        },
+        %{
+          year: y2,
+          month: m2,
+          day: d2,
+          hour: h2,
+          minute: i2,
+          second: s2
+        }
+      ) do
+    case compare({y1, m1, d1}, {y2, m2, d2}) do
+      :eq -> compare({h1, i1, s1}, {h2, i2, s2})
+      ltgt -> ltgt
+    end
+  end
+
   def compare(%{year: y1, month: m1, day: d1}, %{year: y2, month: m2, day: d2}) do
     compare({y1, m1, d1}, {y2, m2, d2})
   end

@@ -13,7 +13,7 @@ defmodule RecurringEvents.Weekly do
   # Example
 
       iex> RecurringEvents.Weekly.unfold(~N[2017-01-22 10:11:11],
-      ...>       %{freq: :weekly, until: ~N[2017-01-23 05:00:00]})
+      ...>       %{freq: :weekly, until: ~N[2017-01-23 15:00:00]})
       ...> |> Enum.take(10)
       [~N[2017-01-22 10:11:11], ~N[2017-01-29 10:11:11]]
 

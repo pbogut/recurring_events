@@ -7,12 +7,12 @@ defmodule RecurringEvents.Daily do
 
   @doc """
   Returns daily stream of dates with respect to `:interval`, `:count` and
-  `:until` rules. Time in date provided as `:until` is ignored.
+  `:until` rules. 
 
   # Example
 
       iex> RecurringEvents.Daily.unfold(~N[2017-01-22 10:11:11],
-      ...>       %{freq: :daily, until: ~N[2017-01-23 05:00:00]})
+      ...>       %{freq: :daily, until: ~N[2017-01-24 05:00:00]})
       ...> |> Enum.take(10)
       [~N[2017-01-22 10:11:11], ~N[2017-01-23 10:11:11]]
 
