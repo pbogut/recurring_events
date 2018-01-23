@@ -32,6 +32,7 @@ defmodule RecurringEvents do
     - `:by_month_day` - month day number or list of month day numbers
     - `:by_week_number` - number of the week in a year, first week should have at
       least 4 days, `:week_start` may affect result of this rule
+    - `:by_year_day` - number of the day in a year `1` is the first `-1` is the last
 
   For more usage examples, please, refer to
   [tests](https://github.com/pbogut/recurring_events/blob/master/test/ical_rrul_test.exs)
