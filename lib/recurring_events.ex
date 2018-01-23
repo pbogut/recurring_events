@@ -45,11 +45,8 @@ defmodule RecurringEvents do
     Monthly,
     Weekly,
     Daily,
-    ByMonth,
-    ByWeekNumber,
-    ByYearDay,
-    ByMonthDay,
-    ByDay
+    ByPump,
+    ByChecker
   }
 
   use Guards
@@ -69,7 +66,7 @@ defmodule RecurringEvents do
   end
 
   def unfold(date, %{freq: freq} = rules) when is_freq_valid(freq) do
-    do_unfold(date, rules)
+    do_unfold(date, listify(rules))
   end
 
   def unfold(_date, %{freq: _}) do
@@ -90,26 +87,27 @@ defmodule RecurringEvents do
 
   """
   def take(date, rules, count) do
-    date |> do_unfold(rules) |> Enum.take(count)
+    date |> do_unfold(listify(rules)) |> Enum.take(count)
   end
 
   defp do_unfold(date, %{freq: freq} = rules) do
     date
     |> get_freq_module(freq).unfold(rules)
-    |> Stream.flat_map(&ByMonth.unfold(&1, rules, :inflate))
-    |> Stream.flat_map(&ByWeekNumber.unfold(&1, rules, :inflate))
-    |> Stream.flat_map(&ByYearDay.unfold(&1, rules, :inflate))
-    |> Stream.flat_map(&ByMonthDay.unfold(&1, rules, :inflate))
-    |> Stream.flat_map(&ByDay.unfold(&1, rules, :inflate))
-    |> Stream.flat_map(&ByMonth.unfold(&1, rules, :filter))
-    |> Stream.flat_map(&ByWeekNumber.unfold(&1, rules, :filter))
-    |> Stream.flat_map(&ByYearDay.unfold(&1, rules, :filter))
-    |> Stream.flat_map(&ByMonthDay.unfold(&1, rules, :filter))
-    |> Stream.flat_map(&ByDay.unfold(&1, rules, :filter))
-    |> Stream.uniq()
+    |> by_rules(rules)
     |> drop_before(date)
     |> prepend(date)
     |> drop_after(rules)
+  end
+
+  defp by_rules(dates, rules) do
+    # @todo think about uniq problem and ho to solv it different way
+    dates
+    |> Stream.flat_map(&inflate(&1, rules))
+    |> Stream.uniq()
+  end
+
+  defp inflate(date, rules) do
+    ByPump.inflate(date, rules, &ByChecker.check(&1, rules))
   end
 
   defp drop_before(list, date) do
@@ -129,4 +127,17 @@ defmodule RecurringEvents do
   defp get_freq_module(:monthly), do: Monthly
   defp get_freq_module(:weekly), do: Weekly
   defp get_freq_module(:daily), do: Daily
+
+  def listify(rules) when is_map(rules) do
+    [:by_month_day, :by_year_day, :by_day, :by_week_number, :by_month]
+    |> Enum.reduce(rules, fn key, rules ->
+      case Map.get(rules, key, nil) do
+        nil -> rules
+        value -> %{rules | key => listify(value)}
+      end
+    end)
+  end
+
+  def listify(list) when is_list(list), do: list
+  def listify(item) when not is_list(item), do: [item]
 end

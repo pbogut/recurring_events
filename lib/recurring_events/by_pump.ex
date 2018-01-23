@@ -1,39 +1,22 @@
-defmodule RecurringEvents.CommonBy do
+defmodule RecurringEvents.ByPump do
   alias RecurringEvents.{Date, Daily}
 
-  def filter(dates, filter_fun) when is_list(dates) do
-    Stream.filter(dates, filter_fun)
-  end
+  def inflate(date, %{by_day: _} = rules, filter), do: do_inflate(date, rules, filter)
+  def inflate(date, %{by_month_day: _} = rules, filter), do: do_inflate(date, rules, filter)
+  def inflate(date, %{by_year_day: _} = rules, filter), do: do_inflate(date, rules, filter)
+  def inflate(date, %{by_week_number: _} = rules, filter), do: do_inflate(date, rules, filter)
+  def inflate(date, %{by_month: _} = rules, filter), do: inflate_by_month(date, rules, filter)
+  def inflate(date, _rules, _filter), do: [date]
 
-  def filter(dates, filter_fun) when is_function(dates) do
-    Stream.filter(dates, filter_fun)
-  end
-
-  def filter(date, filter_fun) do
-    if filter_fun.(date) do
-      [date]
-    else
-      []
-    end
-  end
-
-  def inflate(date, %{by_month: _}, filter) do
-    inflate_month(date, filter)
-  end
-
-  # def inflate(date, %{by_week_number: _} = rules, filter) do
-  # inflate_week(date, rules, filter)
-  # end
-
-  def inflate(date, %{freq: :weekly} = rules, filter) do
+  def do_inflate(date, %{freq: :weekly} = rules, filter) do
     inflate_week(date, rules, filter)
   end
 
-  def inflate(date, %{freq: :monthly}, filter) do
+  def do_inflate(date, %{freq: :monthly}, filter) do
     inflate_month(date, filter)
   end
 
-  def inflate(date, %{freq: :yearly}, filter) do
+  def do_inflate(date, %{freq: :yearly}, filter) do
     inflate_year(date, filter)
   end
 
@@ -58,6 +41,18 @@ defmodule RecurringEvents.CommonBy do
   defp inflate_period(start_date, stop_date, filter) do
     start_date
     |> Daily.unfold(%{until: stop_date, freq: :daily})
+    |> Stream.filter(filter)
+  end
+
+  defp inflate_by_month(date, %{by_month: month}, filter) when not is_list(month) do
+    inflate_by_month(date, %{by_month: [month]}, filter)
+  end
+
+  defp inflate_by_month(date, %{by_month: months}, filter) do
+    Stream.map(months, fn month ->
+      day = Date.last_day_of_the_month(%{date | month: month})
+      %{date | month: month, day: min(day, date.day)}
+    end)
     |> Stream.filter(filter)
   end
 
