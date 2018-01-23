@@ -33,6 +33,8 @@ defmodule RecurringEvents do
     - `:by_week_number` - number of the week in a year, first week should have at
       least 4 days, `:week_start` may affect result of this rule
     - `:by_year_day` - number of the day in a year `1` is the first `-1` is the last
+    - `:by_set_position` - if present, this indicates the nth occurrence of the
+      date withing frequency period
 
   For more usage examples, please, refer to
   [tests](https://github.com/pbogut/recurring_events/blob/master/test/ical_rrul_test.exs)
@@ -51,6 +53,15 @@ defmodule RecurringEvents do
   }
 
   use Guards
+
+  @listify [
+    :by_month_day,
+    :by_year_day,
+    :by_day,
+    :by_week_number,
+    :by_month,
+    :by_set_position
+  ]
 
   @doc """
   Returns stream of recurring events based on date and rules
@@ -95,6 +106,7 @@ defmodule RecurringEvents do
     date
     |> get_freq_module(freq).unfold(rules)
     |> by_rules(rules)
+    |> by_set_position(rules)
     |> drop_before(date)
     |> prepend(date)
     |> drop_after(rules)
@@ -130,8 +142,7 @@ defmodule RecurringEvents do
   defp get_freq_module(:daily), do: Daily
 
   def listify(rules) when is_map(rules) do
-    [:by_month_day, :by_year_day, :by_day, :by_week_number, :by_month]
-    |> Enum.reduce(rules, fn key, rules ->
+    Enum.reduce(@listify, rules, fn key, rules ->
       case Map.get(rules, key, nil) do
         nil -> rules
         value -> %{rules | key => listify(value)}
@@ -141,4 +152,30 @@ defmodule RecurringEvents do
 
   def listify(list) when is_list(list), do: list
   def listify(item) when not is_list(item), do: [item]
+
+  defp by_set_position(dates, %{by_set_position: positions} = rules) do
+    dates
+    |> Stream.chunk_by(chunk_func(rules))
+    |> Stream.flat_map(&Enum.map(positions, fn position -> get_position(&1, position) end))
+  end
+
+  defp by_set_position(dates, _rules), do: dates
+
+  defp get_position(dates, position) do
+    cond do
+      position > 0 -> Enum.at(dates, position - 1)
+      position < 0 -> dates |> Enum.reverse() |> Enum.at(-position - 1)
+    end
+  end
+
+  defp chunk_func(%{freq: :yearly}), do: fn date -> date.year end
+  defp chunk_func(%{freq: :monthly}), do: fn date -> date.month end
+  defp chunk_func(%{freq: :daily}), do: fn date -> date end
+
+  defp chunk_func(%{freq: :weekly} = rules) do
+    &Date.week_number(&1, week_start: week_start(rules))
+  end
+
+  defp week_start(%{week_start: week_start}), do: week_start
+  defp week_start(_), do: :monday
 end

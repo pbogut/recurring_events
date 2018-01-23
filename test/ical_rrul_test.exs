@@ -905,7 +905,6 @@ defmodule RR.IcalRrulTest do
     ==> (1997 9:00 AM EDT)September 4;October 7
         (1997 9:00 AM EST)November 6
   """
-  @tag :pending
   test "The 3rd instance into the month of one of Tuesday, Wednesday or Thursday, for the next 3 months" do
     result =
       ~D[1997-09-04]
@@ -937,7 +936,6 @@ defmodule RR.IcalRrulTest do
         (1998 9:00 AM EST)January 29;February 26;March 30
     ...
   """
-  @tag :pending
   test "The 2nd to last weekday of the month" do
     result =
       ~D[1997-09-29]
