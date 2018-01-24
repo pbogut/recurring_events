@@ -1119,6 +1119,42 @@ defmodule RR.IcalRrulTest do
     assert sunday_expect == sunday_result |> Enum.take(sunday_expect |> Enum.count())
   end
 
+  # additional tests
+  test "1st, 2nd and 3rd week when week starts at wednesday" do
+    result =
+      ~D[2018-01-01]
+      |> RR.unfold(%{
+        week_start: :wednesday,
+        freq: :weekly,
+        by_week_number: [2, 3, 4]
+      })
+
+    expect =
+      date_expand([
+        {2018, 1, [1, 15, 22, 29]}
+      ])
+
+    assert expect == result |> Enum.take(expect |> Enum.count())
+  end
+
+  test "1st, 2nd and 3rd week when yearly will expand to whole weeks" do
+    result =
+      ~D[2018-01-01]
+      |> RR.unfold(%{
+        freq: :yearly,
+        by_week_number: [2, 3, 4]
+      })
+
+    expect =
+      date_expand([
+        {2018, 1, 1},
+        {2018, 1, 8..28},
+        {2019, 1, 7..27}
+      ])
+
+    assert expect == result |> Enum.take(expect |> Enum.count())
+  end
+
   def listify({a, b, c}), do: {listify(a), listify(b), listify(c)}
   def listify({a, b}), do: {listify(a), listify(b)}
   def listify(a) when is_integer(a), do: [a]
