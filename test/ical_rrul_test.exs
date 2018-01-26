@@ -769,7 +769,11 @@ defmodule RR.IcalRrulTest do
   test "Every Thursday, but only during June, July, and August, forever" do
     result =
       ~D[1997-06-05]
-      |> RR.unfold(%{freq: :yearly, by_month: [6, 7, 8], by_day: :thursday})
+      |> RR.unfold(%{
+        freq: :yearly,
+        by_month: [6, 7, 8],
+        by_day: :thursday
+      })
 
     expect =
       date_expand([
@@ -1054,15 +1058,13 @@ defmodule RR.IcalRrulTest do
                               ...16:00,16:20,16:40
     ...
   """
-  @tag :pending
   test "Every 20 minutes from 9:00 AM to 4:40 PM every day" do
     result =
       ~N[1997-09-02 09:00:00]
       |> RR.unfold(%{
         freq: :daily,
         by_hour: [9, 10, 11, 12, 13, 14, 15, 16],
-        by_minute: [0, 20, 40],
-        count: 4
+        by_minute: [0, 20, 40]
       })
 
     expect =
@@ -1070,7 +1072,7 @@ defmodule RR.IcalRrulTest do
         {{1997, 9, [2, 3]}, {[9, 10, 11, 12, 13, 14, 15, 16], [0, 20, 40], 0}}
       ])
 
-    assert expect == result |> Enum.take(999)
+    assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
   @doc """
@@ -1150,6 +1152,22 @@ defmodule RR.IcalRrulTest do
         {2018, 1, 1},
         {2018, 1, 8..28},
         {2019, 1, 7..27}
+      ])
+
+    assert expect == result |> Enum.take(expect |> Enum.count())
+  end
+
+  test "By every 15 seconds forever (oh yeah)" do
+    result =
+      ~N[2018-01-01 09:00:00]
+      |> RR.unfold(%{
+        freq: :secondly,
+        by_second: [0, 15, 30, 45]
+      })
+
+    expect =
+      date_expand([
+        {{2018, 1, 1}, {9, 0..2, [0, 15, 30, 45]}}
       ])
 
     assert expect == result |> Enum.take(expect |> Enum.count())

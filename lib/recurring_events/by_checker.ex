@@ -5,8 +5,11 @@ defmodule RecurringEvents.ByChecker do
   @rules [
     :by_month,
     :by_month_day,
-    :by_week_number,
+    :by_hour,
+    :by_minute,
+    :by_second,
     :by_year_day,
+    :by_week_number,
     :by_day
   ]
 
@@ -39,6 +42,18 @@ defmodule RecurringEvents.ByChecker do
 
   defp do_check(date, :by_year_day, rules) do
     is_year_day_in(date, rules)
+  end
+
+  defp do_check(date, :by_hour, %{by_hour: hours}) do
+    Enum.any?(hours, fn h -> h == date.hour end)
+  end
+
+  defp do_check(date, :by_minute, %{by_minute: minutes}) do
+    Enum.any?(minutes, fn m -> m == date.minute end)
+  end
+
+  defp do_check(date, :by_second, %{by_second: seconds}) do
+    Enum.any?(seconds, fn s -> s == date.second end)
   end
 
   defp is_year_day_in(date, %{by_year_day: numbers}) do

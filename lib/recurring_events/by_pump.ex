@@ -1,39 +1,49 @@
 defmodule RecurringEvents.ByPump do
-  alias RecurringEvents.{Date, Frequency}
+  alias RecurringEvents.{Date, Frequency, Guards}
+
+  use Guards
 
   @rules [
     :by_month,
     :by_month_day,
-    :by_week_number,
     :by_year_day,
-    :by_day
+    :by_week_number,
+    :by_day,
+    :by_hour,
+    :by_minute,
+    :by_second
   ]
 
   def inflate(date, rules, filter) when is_map(rules) do
     Enum.reduce(@rules, [date], fn rule, result ->
       case Map.get(rules, rule, :rule_unused) do
         :rule_unused -> result
-        _ -> inflate(date, rule, rules) |> Enum.filter(filter)
+        _ -> Stream.flat_map(result, &inflate(&1, rule, rules))
       end
     end)
+    |> Stream.filter(filter)
   end
 
-  # any daily is already fully expaned
-  def inflate(date, _any, %{freq: :daily}), do: [date]
-  # if by_day then we have to expand to the maximum
+  def inflate(date, _any, %{freq: :secondly}), do: [date]
+  def inflate(date, :by_minute, %{freq: :minutely}), do: [date]
+  def inflate(date, :by_hour, %{freq: :minutely}), do: [date]
+  def inflate(date, :by_hour, %{freq: :hourly}), do: [date]
+
+  def inflate(date, rule, %{freq: :daily}) when is_date_rule(rule), do: [date]
   def inflate(date, :by_day, rules), do: do_inflate(date, rules)
-  # any by_day or daily is already fully expanded so only filter needed
-  def inflate(date, _any, %{by_day: _}), do: [date]
-  def inflate(date, _any, %{freq: :daily}), do: [date]
-  # if monthly then only filter by_month
+  def inflate(date, rule, %{by_day: _}) when is_date_rule(rule), do: [date]
+  def inflate(date, rule, %{freq: :daily}) when is_date_rule(rule), do: [date]
   def inflate(date, :by_month, %{freq: :monthly}), do: [date]
-  # if weehly then only filter by_week_number
   def inflate(date, :by_week_number, %{freq: :weekly}), do: [date]
 
   def inflate(date, :by_month_day, rules), do: do_inflate(date, rules)
   def inflate(date, :by_year_day, rules), do: do_inflate(date, rules)
   def inflate(date, :by_week_number, rules), do: do_inflate(date, rules)
   def inflate(date, :by_month, rules), do: inflate_by_month(date, rules)
+
+  def inflate(date, :by_hour, rules), do: inflate_by_hour(date, rules)
+  def inflate(date, :by_minute, rules), do: inflate_by_minute(date, rules)
+  def inflate(date, :by_second, rules), do: inflate_by_second(date, rules)
 
   def inflate(date, _, _), do: [date]
 
@@ -70,6 +80,18 @@ defmodule RecurringEvents.ByPump do
   defp inflate_period(start_date, stop_date) do
     start_date
     |> Frequency.unfold(%{until: stop_date, freq: :daily})
+  end
+
+  defp inflate_by_hour(date, %{by_hour: hours}) do
+    for(hour <- hours, do: %{date | hour: hour})
+  end
+
+  defp inflate_by_minute(date, %{by_minute: minutes}) do
+    for(minute <- minutes, do: %{date | minute: minute})
+  end
+
+  defp inflate_by_second(date, %{by_second: seconds}) do
+    for(second <- seconds, do: %{date | second: second})
   end
 
   defp inflate_by_month(date, %{by_month: month}) when not is_list(month) do

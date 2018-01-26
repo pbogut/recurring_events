@@ -21,7 +21,7 @@ defmodule RecurringEvents do
     - `:count` - how many occurences should be return
     - `:interval` - how often recurrence rule repeats
     - `:freq` - this is the only required rule, possible values: `:yearly`,
-      `:monthly`, `:weekly`, `:daily`
+      `:monthly`, `:weekly`, `:daily`, `:hourly`, `:minutely`, `:secondly`
     - `:week_start` - start day of the week, see `:by_day` for possible values
     - `:by_month` - month number or list of month numbers
     - `:by_day` - day or list of days, possible values: `:monday`, `:tuesday`,
@@ -33,6 +33,9 @@ defmodule RecurringEvents do
     - `:by_week_number` - number of the week in a year, first week should have at
       least 4 days, `:week_start` may affect result of this rule
     - `:by_year_day` - number of the day in a year `1` is the first `-1` is the last
+    - `:by_hour` - hour from 0 to 23
+    - `:by_minute` - minute from 0 to 59
+    - `:by_second` - second from 0 to 59
     - `:by_set_position` - if present, this indicates the nth occurrence of the
       date withing frequency period
 
@@ -54,12 +57,15 @@ defmodule RecurringEvents do
 
   use Guards
 
-  @listify [
+  @rules [
     :by_month_day,
     :by_year_day,
     :by_day,
     :by_week_number,
     :by_month,
+    :by_hour,
+    :by_minute,
+    :by_second,
     :by_set_position
   ]
 
@@ -113,10 +119,8 @@ defmodule RecurringEvents do
   end
 
   defp by_rules(dates, rules) do
-    # @todo think about uniq problem and ho to solv it different way
     dates
     |> Stream.flat_map(&inflate(&1, rules))
-    |> Stream.uniq()
   end
 
   defp inflate(date, rules) do
@@ -144,8 +148,8 @@ defmodule RecurringEvents do
   defp get_freq_module(:minutely), do: Frequency
   defp get_freq_module(:secondly), do: Frequency
 
-  def listify(rules) when is_map(rules) do
-    Enum.reduce(@listify, rules, fn key, rules ->
+  defp listify(rules) when is_map(rules) do
+    Enum.reduce(@rules, rules, fn key, rules ->
       case Map.get(rules, key, nil) do
         nil -> rules
         value -> %{rules | key => listify(value)}
@@ -153,8 +157,8 @@ defmodule RecurringEvents do
     end)
   end
 
-  def listify(list) when is_list(list), do: list
-  def listify(item) when not is_list(item), do: [item]
+  defp listify(list) when is_list(list), do: list
+  defp listify(item) when not is_list(item), do: [item]
 
   defp by_set_position(dates, %{by_set_position: positions} = rules) do
     dates

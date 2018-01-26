@@ -45,7 +45,7 @@ defmodule RecurringEvents.Frequency do
   defp get_step_by(:daily), do: :days
   defp get_step_by(:hourly), do: :hours
   defp get_step_by(:minutely), do: :minutes
-  # defp get_step_by(:secondly), do: :seconds
+  defp get_step_by(:secondly), do: :seconds
 
   defp next_iteration(date, step, iteration, step_by) do
     next_date = Date.shift_date(date, step * iteration, step_by)
