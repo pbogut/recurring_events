@@ -5,7 +5,7 @@ defmodule RecurringEvents.Mixfile do
     [
       app: :recurring_events,
       version: "0.2.0",
-      elixir: "~> 1.3",
+      elixir: "~> 1.5",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       package: package(),
