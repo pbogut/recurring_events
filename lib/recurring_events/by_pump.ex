@@ -93,10 +93,6 @@ defmodule RecurringEvents.ByPump do
     for(second <- seconds, do: %{date | second: second})
   end
 
-  defp inflate_by_month(date, %{by_month: month}) when not is_list(month) do
-    inflate_by_month(date, %{by_month: [month]})
-  end
-
   defp inflate_by_month(date, %{by_month: months}) do
     Stream.map(months, fn month ->
       day = Date.last_day_of_the_month(%{date | month: month})
