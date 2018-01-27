@@ -803,15 +803,14 @@ defmodule RR.IcalRrulTest do
         (2000 9:00 AM EDT)October 13
     ...
   """
-  # EXDATE would have to be impleent for this rule, not sure if want to do that
-  @tag :pending
   test "Every Friday the 13th, forever" do
     result =
       ~D[1997-09-02]
       |> RR.unfold(%{
         freq: :monthly,
         by_day: :friday,
-        by_month_day: 13
+        by_month_day: 13,
+        exclude_date: ~D[1997-09-02]
       })
 
     expect =

@@ -38,6 +38,7 @@ defmodule RecurringEvents do
     - `:by_second` - second from 0 to 59
     - `:by_set_position` - if present, this indicates the nth occurrence of the
       date withing frequency period
+    - `:exclude_date` - dates to be excluded from the result
 
   For more usage examples, please, refer to
   [tests](https://github.com/pbogut/recurring_events/blob/master/test/ical_rrul_test.exs)
@@ -66,7 +67,8 @@ defmodule RecurringEvents do
     :by_hour,
     :by_minute,
     :by_second,
-    :by_set_position
+    :by_set_position,
+    :exclude_date
   ]
 
   @doc """
@@ -105,6 +107,15 @@ defmodule RecurringEvents do
     |> drop_before(date)
     |> prepend(date)
     |> drop_after(rules)
+    |> drop_exclude(rules)
+  end
+
+  defp drop_exclude(dates, %{exclude_date: excludes}) do
+    dates |> Stream.filter(&(&1 not in excludes))
+  end
+
+  defp drop_exclude(dates, _) do
+    dates
   end
 
   defp by_rules(dates, rules) do
@@ -137,7 +148,7 @@ defmodule RecurringEvents do
   defp get_freq_module(:minutely), do: Frequency
   defp get_freq_module(:secondly), do: Frequency
 
-  defp listify(rules) when is_map(rules) do
+  defp listify(%{freq: _} = rules) do
     Enum.reduce(@rules, rules, fn key, rules ->
       case Map.get(rules, key, nil) do
         nil -> rules
