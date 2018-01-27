@@ -79,20 +79,9 @@ defmodule RecurringEvents do
       [~D[2014-06-07], ~D[2015-06-07], ~D[2016-06-07]]
 
   """
-  def unfold(_date, %{count: _, until: _}) do
-    raise ArgumentError, message: "Can have either, count or until"
-  end
-
-  def unfold(date, %{freq: freq} = rules) when is_freq_valid(freq) do
+  def unfold(date, rules) do
+    validate(date, rules)
     do_unfold(date, listify(rules))
-  end
-
-  def unfold(_date, %{freq: _}) do
-    raise ArgumentError, message: "Frequency is invalid"
-  end
-
-  def unfold(_date, _rrule) do
-    raise ArgumentError, message: "Frequency is required"
   end
 
   @doc """
@@ -105,7 +94,7 @@ defmodule RecurringEvents do
 
   """
   def take(date, rules, count) do
-    date |> do_unfold(listify(rules)) |> Enum.take(count)
+    date |> unfold(rules) |> Enum.take(count)
   end
 
   defp do_unfold(date, %{freq: freq} = rules) do
@@ -185,4 +174,28 @@ defmodule RecurringEvents do
 
   defp week_start(%{week_start: week_start}), do: week_start
   defp week_start(_), do: :monday
+
+  defp validate(date, rules) do
+    freq = Map.get(rules, :freq)
+
+    cond do
+      !freq ->
+        raise ArgumentError, message: "Frequency is required"
+
+      !is_freq_valid(freq) ->
+        raise ArgumentError, message: "Frequency is invalid"
+
+      Map.has_key?(rules, :count) and Map.has_key?(rules, :until) ->
+        raise ArgumentError, message: "Can have either, count or until"
+
+      !is_date(date) ->
+        raise ArgumentError, message: "You have to use date or datetime structure"
+
+      (is_time_freq(freq) or has_time_rule(rules)) and not has_time(date) ->
+        raise ArgumentError, message: "To use time rules you have to provide date with time"
+
+      true ->
+        nil
+    end
+  end
 end

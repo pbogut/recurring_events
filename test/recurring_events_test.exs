@@ -4,7 +4,7 @@ defmodule RecurringEventsTest do
 
   alias RecurringEvents, as: RR
 
-  @date ~N[2017-01-01 10:00:00]
+  @date ~D[2017-01-01]
   @valid_rrule %{freq: :yearly}
 
   test "freq is required" do
@@ -22,6 +22,22 @@ defmodule RecurringEventsTest do
   test "can have eathier until or count" do
     assert_raise ArgumentError, "Can have either, count or until", fn ->
       RR.unfold(@date, Map.merge(@valid_rrule, %{count: 1, until: 2}))
+    end
+  end
+
+  test "when time ruls provided date have to have time data" do
+    assert_raise ArgumentError, "To use time rules you have to provide date with time", fn ->
+      RR.unfold(@date, %{freq: :minutely})
+    end
+
+    assert_raise ArgumentError, "To use time rules you have to provide date with time", fn ->
+      RR.unfold(@date, %{freq: :yearly, by_hour: 12})
+    end
+  end
+
+  test "if no date provided it should raise an error" do
+    assert_raise ArgumentError, "You have to use date or datetime structure", fn ->
+      RR.unfold(%{}, @valid_rrule)
     end
   end
 

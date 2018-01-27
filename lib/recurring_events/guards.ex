@@ -43,4 +43,25 @@ defmodule RecurringEvents.Guards do
         unquote(freq) == :by_day
     end
   end
+
+  defmacro is_date(date) do
+    quote do
+      Map.has_key?(unquote(date), :year) and Map.has_key?(unquote(date), :month) and
+        Map.has_key?(unquote(date), :day)
+    end
+  end
+
+  defmacro has_time(date) do
+    quote do
+      Map.has_key?(unquote(date), :hour) and Map.has_key?(unquote(date), :minute) and
+        Map.has_key?(unquote(date), :second)
+    end
+  end
+
+  defmacro has_time_rule(rules) do
+    quote do
+      Map.has_key?(unquote(rules), :by_hour) or Map.has_key?(unquote(rules), :by_minute) or
+        Map.has_key?(unquote(rules), :by_second)
+    end
+  end
 end
