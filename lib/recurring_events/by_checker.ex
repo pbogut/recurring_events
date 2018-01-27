@@ -45,15 +45,15 @@ defmodule RecurringEvents.ByChecker do
   end
 
   defp do_check(date, :by_hour, %{by_hour: hours}) do
-    Enum.any?(hours, fn h -> h == date.hour end)
+    date.hour in hours
   end
 
   defp do_check(date, :by_minute, %{by_minute: minutes}) do
-    Enum.any?(minutes, fn m -> m == date.minute end)
+    date.minute in minutes
   end
 
   defp do_check(date, :by_second, %{by_second: seconds}) do
-    Enum.any?(seconds, fn s -> s == date.second end)
+    date.second in seconds
   end
 
   defp is_year_day_in(date, %{by_year_day: numbers}) do
@@ -94,7 +94,7 @@ defmodule RecurringEvents.ByChecker do
   end
 
   defp is_month_in(date, %{by_month: months}) do
-    Enum.any?(months, fn month -> month == date.month end)
+    date.month in months
   end
 
   defp is_week_day_in(date, %{by_day: days, by_month: _}) do
