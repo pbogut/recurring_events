@@ -11,13 +11,13 @@ defmodule RecurringEvents.Frequency do
 
   # Example
 
-  #    iex> RecurringEvents.Frequency.unfold(~N[2017-01-22 10:11:11],
-  #    ...>       %{freq: :frequency, until: ~N[2017-01-23 05:00:00]})
-  #    ...> |> Enum.take(10)
-  #    [~N[2017-01-22 10:11:11], ~N[2017-01-23 10:11:11]]
+      iex> RecurringEvents.Frequency.unfold(~N[2017-01-22 10:11:11],
+      ...>       %{freq: :daily, until: ~N[2017-01-23 15:00:00]})
+      ...> |> Enum.take(10)
+      [~N[2017-01-22 10:11:11], ~N[2017-01-23 10:11:11]]
 
   """
-  def unfold(date, %{freq: frequency} = rules) do
+  def unfold(date, %{freq: _frequency} = rules) do
     do_unfold(date, rules)
   end
 
