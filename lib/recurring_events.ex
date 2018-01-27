@@ -120,11 +120,8 @@ defmodule RecurringEvents do
 
   defp by_rules(dates, rules) do
     dates
-    |> Stream.flat_map(&inflate(&1, rules))
-  end
-
-  defp inflate(date, rules) do
-    ByPump.inflate(date, rules, &ByChecker.check(&1, rules))
+    |> Stream.flat_map(&ByPump.inflate(&1, rules))
+    |> Stream.filter(&ByChecker.check(&1, rules))
   end
 
   defp drop_before(list, date) do

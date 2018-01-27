@@ -14,14 +14,13 @@ defmodule RecurringEvents.ByPump do
     :by_second
   ]
 
-  def inflate(date, rules, filter) when is_map(rules) do
+  def inflate(date, rules) when is_map(rules) do
     Enum.reduce(@rules, [date], fn rule, result ->
       case Map.get(rules, rule, :rule_unused) do
         :rule_unused -> result
         _ -> Stream.flat_map(result, &inflate(&1, rule, rules))
       end
     end)
-    |> Stream.filter(filter)
   end
 
   def inflate(date, _any, %{freq: :secondly}), do: [date]
