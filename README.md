@@ -1,5 +1,6 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Build Status](https://travis-ci.org/pbogut/recurring_events.svg?branch=master)](https://travis-ci.org/pbogut/recurring_events)
+[![Coverage Status](https://coveralls.io/repos/github/pbogut/recurring_events/badge.svg?branch=master)](https://coveralls.io/github/pbogut/recurring_events?branch=master)
 
 # RecurringEvents
 

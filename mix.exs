@@ -14,7 +14,8 @@ defmodule RecurringEvents.Mixfile do
         main: RecurringEvents,
         source_url: "https://github.com/pbogut/recurring_events"
       ],
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -35,7 +36,7 @@ defmodule RecurringEvents.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:ex_doc, ">= 0.0.0", only: :dev}]
+    [{:ex_doc, ">= 0.0.0", only: :dev}, {:excoveralls, "~> 0.8", only: :test}]
   end
 
   defp package do
