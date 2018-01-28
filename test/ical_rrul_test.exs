@@ -1121,6 +1121,88 @@ defmodule RR.IcalRrulTest do
   end
 
   # additional tests
+  test "for 4th and last monday in each year forever" do
+    result =
+      ~D[2018-01-01]
+      |> RR.unfold(%{
+        freq: :yearly,
+        by_day: :monday,
+        by_set_position: [4, -1],
+        exclude_date: ~D[2018-01-01]
+      })
+
+    expect =
+      date_expand([
+        {2018, 1, 22},
+        {2018, 12, 31},
+        {2019, 1, 28},
+        {2019, 12, 30},
+        {2020, 1, 27},
+        {2020, 12, 28},
+        {2021, 1, 25},
+        {2021, 12, 27},
+        {2022, 1, 24},
+        {2022, 12, 26}
+      ])
+
+    assert expect == result |> Enum.take(expect |> Enum.count())
+  end
+
+  test "Test weekly frequency with by_set_position" do
+    result =
+      ~N[2018-01-01 09:00:00]
+      |> RR.unfold(%{
+        freq: :weekly,
+        by_hour: [1, 2, 3, 4, 5],
+        by_set_position: [2, 4],
+        week_start: :tuesday,
+        exclude_date: ~N[2018-01-01 09:00:00]
+      })
+
+    expect =
+      date_expand([
+        {{2018, 1, 8}, {2, 0, 0}},
+        {{2018, 1, 8}, {4, 0, 0}},
+        {{2018, 1, 15}, {2, 0, 0}},
+        {{2018, 1, 15}, {4, 0, 0}},
+        {{2018, 1, 22}, {2, 0, 0}},
+        {{2018, 1, 22}, {4, 0, 0}},
+        {{2018, 1, 29}, {2, 0, 0}},
+        {{2018, 1, 29}, {4, 0, 0}},
+        {{2018, 2, 5}, {2, 0, 0}},
+        {{2018, 2, 5}, {4, 0, 0}}
+      ])
+
+    assert expect == result |> Enum.take(expect |> Enum.count())
+  end
+
+  test "Test daily frequency with by_set_position" do
+    result =
+      ~N[2018-01-01 00:00:00]
+      |> RR.unfold(%{
+        freq: :daily,
+        by_hour: [1, 2, 3, 4, 5],
+        by_set_position: [2, 4],
+        exclude_date: ~N[2018-01-01 00:00:00]
+      })
+
+    expect =
+      date_expand([
+        {{2018, 1, 1}, {2, 0, 0}},
+        {{2018, 1, 1}, {4, 0, 0}},
+        {{2018, 1, 2}, {2, 0, 0}},
+        {{2018, 1, 2}, {4, 0, 0}},
+        {{2018, 1, 3}, {2, 0, 0}},
+        {{2018, 1, 3}, {4, 0, 0}},
+        {{2018, 1, 4}, {2, 0, 0}},
+        {{2018, 1, 4}, {4, 0, 0}},
+        {{2018, 1, 5}, {2, 0, 0}},
+        {{2018, 1, 5}, {4, 0, 0}}
+      ])
+
+    assert expect == result |> Enum.take(expect |> Enum.count())
+  end
+
   test "1st, 2nd and 3rd week when week starts at wednesday" do
     result =
       ~D[2018-01-01]

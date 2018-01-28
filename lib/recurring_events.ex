@@ -160,7 +160,13 @@ defmodule RecurringEvents do
   defp by_set_position(dates, %{by_set_position: positions} = rules) do
     dates
     |> Stream.chunk_by(chunk_func(rules))
-    |> Stream.flat_map(&Enum.map(positions, fn position -> get_position(&1, position) end))
+    |> Stream.flat_map(&get_at_positions(&1, positions))
+  end
+
+  defp get_at_positions(date, positions) do
+    positions
+    |> Enum.map(fn position -> get_position(date, position) end)
+    |> Enum.filter(fn date -> date != nil end)
   end
 
   defp by_set_position(dates, _rules), do: dates
@@ -174,7 +180,7 @@ defmodule RecurringEvents do
 
   defp chunk_func(%{freq: :yearly}), do: fn date -> date.year end
   defp chunk_func(%{freq: :monthly}), do: fn date -> date.month end
-  defp chunk_func(%{freq: :daily}), do: fn date -> date end
+  defp chunk_func(%{freq: :daily}), do: fn date -> date.day end
 
   defp chunk_func(%{freq: :weekly} = rules) do
     &Date.week_number(&1, week_start: week_start(rules))
