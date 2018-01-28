@@ -17,8 +17,8 @@ The package can be installed as:
 
 Add `recurring_events` to your list of dependencies in `mix.exs`:
 
-    ```
-    def deps do
-      [{:recurring_events, "~> 0.2.0"}]
-    end
-    ```
+```elixir
+def deps do
+  [{:recurring_events, "~> 0.3.0"}]
+end
+```
