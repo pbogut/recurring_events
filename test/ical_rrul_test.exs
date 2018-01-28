@@ -1172,6 +1172,22 @@ defmodule RR.IcalRrulTest do
     assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
+  test "0, 15, 30, 45 sec after each hour forever" do
+    result =
+      ~N[2018-01-01 09:00:00]
+      |> RR.unfold(%{
+        freq: :hourly,
+        by_second: [0, 15, 30, 45]
+      })
+
+    expect =
+      date_expand([
+        {{2018, 1, 1}, {9..11, 0, [0, 15, 30, 45]}}
+      ])
+
+    assert expect == result |> Enum.take(expect |> Enum.count())
+  end
+
   def listify({a, b, c}), do: {listify(a), listify(b), listify(c)}
   def listify({a, b}), do: {listify(a), listify(b)}
   def listify(a) when is_integer(a), do: [a]
