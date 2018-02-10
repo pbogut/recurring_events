@@ -132,8 +132,8 @@ defmodule RecurringEvents do
     |> by_set_position(rules)
     |> drop_before(date)
     |> prepend(date)
-    |> drop_after(rules)
     |> drop_exclude(rules)
+    |> drop_after(rules)
   end
 
   defp drop_exclude(dates, %{exclude_date: excludes}) do

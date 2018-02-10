@@ -1270,6 +1270,68 @@ defmodule RR.IcalRrulTest do
     assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
+  describe "count shoud be resolbed after exclude dates" do
+    test "when freq: :daily" do
+      result =
+        RR.take(
+          %{
+            date_start: ~D[2018-01-01],
+            exclude_date: ~D[2018-01-01],
+            freq: :daily,
+            count: 1
+          },
+          99
+        )
+
+      assert [~D[2018-01-02]] == result
+    end
+
+    test "when freq: :weekly" do
+      result =
+        RR.take(
+          %{
+            date_start: ~D[2018-01-01],
+            exclude_date: ~D[2018-01-01],
+            freq: :weekly,
+            count: 1
+          },
+          99
+        )
+
+      assert [~D[2018-01-08]] == result
+    end
+
+    test "when freq: :monthly" do
+      result =
+        RR.take(
+          %{
+            date_start: ~D[2018-01-01],
+            exclude_date: ~D[2018-01-01],
+            freq: :monthly,
+            count: 1
+          },
+          99
+        )
+
+      assert [~D[2018-02-01]] == result
+    end
+
+    test "when freq: :yearly" do
+      result =
+        RR.take(
+          %{
+            date_start: ~D[2018-01-01],
+            exclude_date: ~D[2018-01-01],
+            freq: :yearly,
+            count: 1
+          },
+          99
+        )
+
+      assert [~D[2019-01-01]] == result
+    end
+  end
+
   def listify({a, b, c}), do: {listify(a), listify(b), listify(c)}
   def listify({a, b}), do: {listify(a), listify(b)}
   def listify(a) when is_integer(a), do: [a]

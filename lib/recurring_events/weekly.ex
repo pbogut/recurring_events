@@ -81,6 +81,9 @@ defmodule RecurringEvents.Weekly do
   defp get_step(%{interval: interval}), do: interval
   defp get_step(%{}), do: 1
 
-  defp get_count(%{count: count}), do: count
+  defp add_count(%{exclude_date: dates}), do: dates |> Enum.count()
+  defp add_count(%{}), do: 0
+
+  defp get_count(%{count: count} = rules), do: count + add_count(rules)
   defp get_count(%{}), do: :infinity
 end
