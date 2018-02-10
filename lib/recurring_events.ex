@@ -164,13 +164,13 @@ defmodule RecurringEvents do
     |> Stream.flat_map(&get_at_positions(&1, positions))
   end
 
+  defp by_set_position(dates, _rules), do: dates
+
   defp get_at_positions(date, positions) do
     positions
     |> Enum.map(fn position -> get_position(date, position) end)
     |> Enum.filter(fn date -> date != nil end)
   end
-
-  defp by_set_position(dates, _rules), do: dates
 
   defp get_position(dates, position) do
     cond do
