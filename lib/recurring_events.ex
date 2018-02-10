@@ -39,6 +39,7 @@ defmodule RecurringEvents do
     - `:by_set_position` - if present, this indicates the nth occurrence of the
       date withing frequency period
     - `:exclude_date` - dates to be excluded from the result
+    - `:until` - limit result up to provided date
 
   For more usage examples, please, refer to
   [tests](https://github.com/pbogut/recurring_events/blob/master/test/ical_rrul_test.exs)
