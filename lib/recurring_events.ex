@@ -7,17 +7,15 @@ defmodule RecurringEvents do
   [iCal Recurrence rule specification](http://www.kanzaki.com/docs/ical/rrule.html)
   [RFC 2445](https://tools.ietf.org/html/rfc2445).
 
-  Currently, it is ignoring time but if DateTime or NaiveDateTime structure
-  is used time will be preserved (see below).
-
-      iex> RecurringEvents.take(~D[2016-12-07], %{freq: :daily}, 3)
+      iex> RecurringEvents.take(%{date_start: ~D[2016-12-07],freq: :daily}, 3)
       [~D[2016-12-07], ~D[2016-12-08], ~D[2016-12-09]]
 
       iex> RecurringEvents.take(~N[2016-01-17 12:21:06], %{freq: :weekly}, 2)
       [~N[2016-01-17 12:21:06], ~N[2016-01-24 12:21:06]]
 
-  Currently supported rules
+  Supported rules
 
+    - `:date_start` - start date can be provided directly in rules map
     - `:count` - how many occurences should be return
     - `:interval` - how often recurrence rule repeats
     - `:freq` - this is the only required rule, possible values: `:yearly`,
@@ -88,6 +86,20 @@ defmodule RecurringEvents do
   end
 
   @doc """
+  Returns stream of recurring events based on rules
+
+  # Example
+
+      iex> RecurringEvents.unfold(%{date_start: ~D[2014-06-07], freq: :yearly})
+      ...> |> Enum.take(3)
+      [~D[2014-06-07], ~D[2015-06-07], ~D[2016-06-07]]
+
+  """
+  def unfold(%{date_start: date} = rules) do
+    unfold(date, rules)
+  end
+
+  @doc """
   Returns list of recurring events based on date and rules
 
   # Example
@@ -98,6 +110,19 @@ defmodule RecurringEvents do
   """
   def take(date, rules, count) do
     date |> unfold(rules) |> Enum.take(count)
+  end
+
+  @doc """
+  Returns list of recurring events based on rules
+
+  # Example
+
+      iex> RecurringEvents.take(%{date_start: ~D[2015-09-13], freq: :monthly}, 4)
+      [~D[2015-09-13], ~D[2015-10-13], ~D[2015-11-13], ~D[2015-12-13]]
+
+  """
+  def take(%{date_start: date} = rules, count) do
+    take(date, rules, count)
   end
 
   defp do_unfold(date, %{freq: freq} = rules) do
