@@ -75,7 +75,11 @@ defmodule RecurringEvents.Date do
   end
 
   def shift_date({year, month, day}, count, :years) do
-    {year + count, month, day}
+    new_year = year + count
+    last_day = :calendar.last_day_of_the_month(new_year, month)
+    new_day = min(day, last_day)
+
+    {new_year, month, new_day}
   end
 
   # defp shift_time(%{hour: hour, minute: minute, second: second} = date, count, period) do

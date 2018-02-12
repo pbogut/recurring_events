@@ -37,6 +37,10 @@ defmodule RecurringEvents.DateTest do
     assert %{@date | year: 2019} == Date.shift_date(@date, 2, :years)
     assert %{@date | year: 2012} == Date.shift_date(@date, -5, :years)
     assert %{@date | year: 2032} == Date.shift_date(@date, 15, :years)
+
+    date = ~D[1996-02-29]
+    assert %{date | year: 1997, day: 28} == Date.shift_date(date, 1, :years)
+    assert %{date | year: 2000, day: 29} == Date.shift_date(date, 4, :years)
   end
 
   test "can return day of the week" do

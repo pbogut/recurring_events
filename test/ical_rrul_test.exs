@@ -119,6 +119,35 @@ defmodule RR.IcalRrulTest do
   end
 
   @doc """
+    Every February 29, for 5 years
+
+    DTSTART;TZID=US-Eastern:19960229T090000
+    RRULE:FREQ=YEARLY;COUNT=5;
+
+    ==> (1996 9:00 AM EDT)February 29
+        (1997 9:00 AM EDT)February 28
+        (1998 9:00 AM EDT)February 28
+        (1999 9:00 AM EDT)February 28
+        (2000 9:00 AM EDT)February 29
+  """
+  test "Every February 29, for 5 years" do
+    result =
+      ~D[1996-02-29]
+      |> RR.unfold(%{freq: :yearly, count: 5})
+
+    expect =
+      date_expand([
+        {1996, 2, 29},
+        {1997, 2, 28},
+        {1998, 2, 28},
+        {1999, 2, 28},
+        {2000, 2, 29}
+      ])
+
+    assert expect == result |> Enum.to_list()
+  end
+
+  @doc """
     Weekly for 10 occurrences
 
     DTSTART;TZID=US-Eastern:19970902T090000
