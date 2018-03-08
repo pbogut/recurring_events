@@ -1232,6 +1232,23 @@ defmodule RR.IcalRrulTest do
     assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
+  test "Test daily frequency with exclude date range" do
+    result =
+      ~N[2018-01-01 00:00:00]
+      |> RR.take(%{
+        freq: :daily,
+        exclude_date: Date.range(~D[2018-01-02], ~D[2018-01-04])
+      }, 5)
+
+    expect =
+      date_expand([
+        {{2018, 1, 1}, {0, 0, 0}},
+        {{2018, 1, 5}, {0, 0, 0}}
+      ])
+
+    assert expect == result |> Enum.take(5)
+  end
+
   test "1st, 2nd and 3rd week when week starts at wednesday" do
     result =
       ~D[2018-01-01]
@@ -1299,7 +1316,7 @@ defmodule RR.IcalRrulTest do
     assert expect == result |> Enum.take(expect |> Enum.count())
   end
 
-  describe "count shoud be resolbed after exclude dates" do
+  describe "count shoud be resolved after exclude dates" do
     test "when freq: :daily" do
       result =
         RR.take(
