@@ -1,4 +1,9 @@
 defmodule RecurringEvents.DateTimex do
+  @moduledoc """
+  Helper module responsible for common date manipulations.
+  This one is using Timex if avaliable
+  """
+
   alias RecurringEvents.Date
 
   def last_day_of_the_month(d), do: Date.last_day_of_the_month(d)
@@ -9,15 +14,7 @@ defmodule RecurringEvents.DateTimex do
   def compare(d1, d2), do: Date.compare(d1, d2)
   def prev_week_day(d), do: Date.prev_week_day(d)
 
-  @moduledoc """
-  Helper module responsible for common date manipulations.
-  This one is using Timex if avaliable
-  """
-
-  def shift_date(date, count, period) when period == :days do
-    Timex.shift(date, days: count)
-  end
   def shift_date(date, count, period) do
-    Date.shift_date(date, count, period)
+    Timex.shift(date, [{period, count}])
   end
 end
