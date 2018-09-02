@@ -1,7 +1,8 @@
 defmodule RecurringEvents.ByPump do
-  alias RecurringEvents.{Date, Frequency, Guards}
-
+  alias RecurringEvents.{Frequency, Guards}
   use Guards
+
+  @date_helper Application.get_env(:recurring_events, :date_helper_module)
 
   @rules [
     :by_month,
@@ -66,7 +67,7 @@ defmodule RecurringEvents.ByPump do
 
   defp inflate_month(date) do
     month_start = %{date | day: 1}
-    month_end = %{date | day: Date.last_day_of_the_month(date)}
+    month_end = %{date | day: @date_helper.last_day_of_the_month(date)}
     inflate_period(month_start, month_end)
   end
 
@@ -95,38 +96,38 @@ defmodule RecurringEvents.ByPump do
 
   defp inflate_by_month(date, %{by_month: months}) do
     Stream.map(months, fn month ->
-      day = Date.last_day_of_the_month(%{date | month: month})
+      day = @date_helper.last_day_of_the_month(%{date | month: month})
       %{date | month: month, day: min(day, date.day)}
     end)
   end
 
   defp week_start_date(date, rules) do
-    current_day = Date.week_day(date)
+    current_day = @date_helper.week_day(date)
     start_day = week_start_day(rules)
 
     if current_day == start_day do
       date
     else
       date
-      |> Date.shift_date(-1, :days)
+      |> @date_helper.shift_date(-1, :days)
       |> week_start_date(rules)
     end
   end
 
   defp week_end_date(date, rules) do
-    current_day = Date.week_day(date)
+    current_day = @date_helper.week_day(date)
     end_day = week_end_day(rules)
 
     if current_day == end_day do
       date
     else
       date
-      |> Date.shift_date(1, :days)
+      |> @date_helper.shift_date(1, :days)
       |> week_end_date(rules)
     end
   end
 
-  defp week_end_day(%{week_start: start_day}), do: Date.prev_week_day(start_day)
+  defp week_end_day(%{week_start: start_day}), do: @date_helper.prev_week_day(start_day)
   defp week_end_day(%{}), do: :sunday
 
   defp week_start_day(%{week_start: start_day}), do: start_day

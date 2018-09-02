@@ -3,7 +3,7 @@ defmodule RecurringEvents.Yearly do
   Handles `:yearly` frequency rule
   """
 
-  alias RecurringEvents.Date
+  @date_helper Application.get_env(:recurring_events, :date_helper_module)
 
   @doc """
   Returns yearly stream of dates with respect to `:interval`, `:count` and
@@ -41,7 +41,7 @@ defmodule RecurringEvents.Yearly do
   end
 
   defp next_iteration(date, step, iteration) do
-    next_date = Date.shift_date(date, step * iteration, :years)
+    next_date = @date_helper.shift_date(date, step * iteration, :years)
     acc = {date, iteration + 1}
     {[next_date], acc}
   end
