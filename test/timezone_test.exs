@@ -21,6 +21,36 @@ defmodule RecurringEvents.TimezoneTest do
                )
     end
 
+    @doc """
+      From RFC 5545:
+
+      > If, based on the definition of the referenced time zone, the local
+      > time described occurs more than once (when changing from daylight
+      > to standard time), the DATE-TIME value refers to the first
+      > occurrence of the referenced time.  Thus, TZID=America/
+      > New_York:20071104T013000 indicates November 4, 2007 at 1:30 A.M.
+      > EDT (UTC-04:00).
+
+      Therefore in this example, a recurring 1:30 A.M. event should happen at
+      the first occurence of 1:30 AM, immediately before the clocks are set back.
+    """
+    test "should handle timezones at the fall DST boundary for a 1:30 AM event" do
+      time = Timex.to_datetime({{2018, 11, 2}, {5, 0, 0}}, "America/Los_Angeles")
+
+      result =
+        RR.take(
+          time,
+          %{freq: :daily, by_hour: 1, by_minute: 30, by_second: 0},
+          5
+        )
+
+      assert result ==
+               date_tz_expand(
+                 [{{2018, 11, 2}, {5, 0, 0}}, {{2018, 11, 3..6}, {1, 30, 0}}],
+                 "America/Los_Angeles"
+               )
+    end
+
     test "should handle timezones at the spring DST boundary" do
       time = Timex.to_datetime({{2019, 3, 8}, {5, 0, 0}}, "America/Los_Angeles")
 
@@ -35,6 +65,40 @@ defmodule RecurringEvents.TimezoneTest do
                date_tz_expand(
                  [{{2019, 3, 8}, {5, 0, 0}}, {{2019, 3, 9..12}, {3, 0, 0}}],
                  "America/Los_Angeles"
+               )
+    end
+
+    @doc """
+      From RFC 5545:
+
+      > If the local time described does not occur (when changing from standard
+      > to daylight time), the DATE-TIME value is interpreted using the UTC
+      > offset before the gap in local times. Thus,
+      > TZID=America/New_York:20070311T023000 indicates March 11, 2007 at
+      > 3:30 A.M. EDT (UTC-04:00), one hour after 1:30 A.M. EST (UTC-05:00).
+
+      Therefore in this example, a recurring 2:30 A.M. event should happen at
+      3:30 AM immediately following the DST gap.
+    """
+    test "should handle timezones at the spring DST boundary for a 2:30 AM event" do
+      time = Timex.to_datetime({{2019, 3, 8}, {5, 0, 0}}, "America/New_York")
+
+      result =
+        RR.take(
+          time,
+          %{freq: :daily, by_hour: 2, by_minute: 30, by_second: 0},
+          5
+        )
+
+      assert result ==
+               date_tz_expand(
+                 [
+                   {{2019, 3, 8}, {5, 0, 0}},
+                   {{2019, 3, 9}, {2, 30, 0}},
+                   {{2019, 3, 10}, {3, 30, 0}},
+                   {{2019, 3, 11..12}, {2, 30, 0}}
+                 ],
+                 "America/New_York"
                )
     end
 
