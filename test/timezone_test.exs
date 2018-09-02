@@ -4,7 +4,7 @@ defmodule RecurringEvents.TimezoneTest do
   alias RecurringEvents, as: RR
 
   if Code.ensure_loaded?(Timex) do
-    test "should handle timezones if Timex available" do
+    test "should handle timezones at the fall DST boundary" do
       time = Timex.to_datetime({{2018, 11, 2}, {5, 0, 0}}, "America/Los_Angeles")
 
       result =
@@ -17,6 +17,23 @@ defmodule RecurringEvents.TimezoneTest do
       assert result ==
                date_tz_expand(
                  [{{2018, 11, 2}, {5, 0, 0}}, {{2018, 11, 3..6}, {3, 0, 0}}],
+                 "America/Los_Angeles"
+               )
+    end
+
+    test "should handle timezones at the spring DST boundary" do
+      time = Timex.to_datetime({{2019, 3, 8}, {5, 0, 0}}, "America/Los_Angeles")
+
+      result =
+        RR.take(
+          time,
+          %{freq: :daily, by_hour: 3, by_minute: 0, by_second: 0},
+          5
+        )
+
+      assert result ==
+               date_tz_expand(
+                 [{{2019, 3, 8}, {5, 0, 0}}, {{2019, 3, 9..12}, {3, 0, 0}}],
                  "America/Los_Angeles"
                )
     end
