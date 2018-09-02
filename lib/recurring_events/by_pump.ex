@@ -62,18 +62,25 @@ defmodule RecurringEvents.ByPump do
   defp inflate_week(date, rules) do
     week_start = week_start_date(date, rules)
     week_end = week_end_date(date, rules)
+
     inflate_period(week_start, week_end)
   end
 
   defp inflate_month(date) do
-    month_start = %{date | day: 1}
-    month_end = %{date | day: @date_helper.last_day_of_the_month(date)}
+    start_shift = 1 - date.day
+    end_shift = @date_helper.last_day_of_the_month(date) -1
+
+    month_start = @date_helper.shift_date(date, start_shift, :days)
+    month_end = @date_helper.shift_date(month_start, end_shift, :days)
     inflate_period(month_start, month_end)
   end
 
   defp inflate_year(date) do
-    year_start = %{date | day: 1, month: 1}
-    year_end = %{date | day: 31, month: 12}
+    start_shift = 1 - @date_helper.day_of_the_year(date)
+    end_shift = @date_helper.last_day_of_the_year(date) - 1
+
+    year_start = @date_helper.shift_date(date, start_shift, :days)
+    year_end = @date_helper.shift_date(year_start, end_shift, :days)
     inflate_period(year_start, year_end)
   end
 
