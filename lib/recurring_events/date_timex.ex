@@ -7,6 +7,7 @@ defmodule RecurringEvents.DateTimex do
   alias RecurringEvents.Date
 
   def last_day_of_the_month(d), do: Date.last_day_of_the_month(d)
+  def last_day_of_the_year(d), do: Date.last_day_of_the_year(d)
   def week_number(d, o), do: Date.week_number(d, o)
   def numbered_week_day(d, p, o), do: Date.numbered_week_day(d, p, o)
   def week_day(d), do: Date.week_day(d)
