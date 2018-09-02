@@ -104,7 +104,10 @@ defmodule RecurringEvents.ByPump do
   defp inflate_by_month(date, %{by_month: months}) do
     Stream.map(months, fn month ->
       day = @date_helper.last_day_of_the_month(%{date | month: month})
-      %{date | month: month, day: min(day, date.day)}
+      month_shift = month - date.month
+      new_date = date |> @date_helper.shift_date(month_shift, :months)
+      day_shift = min(day, date.day) - new_date.day
+      new_date |> @date_helper.shift_date(day_shift, :days)
     end)
   end
 
