@@ -108,8 +108,14 @@ defmodule RecurringEvents do
       [~D[2015-09-13], ~D[2015-10-13], ~D[2015-11-13], ~D[2015-12-13]]
 
   """
-  def take(date, rules, count) do
+  def take(date, rules, count) when count >= 0 do
     date |> unfold(rules) |> Enum.take(count)
+  end
+
+  def take(_date, _rules, count) do
+    raise ArgumentError,
+      message: "Expected a non-negative integer for `count`, " <>
+      "got #{count} instead."
   end
 
   @doc """
