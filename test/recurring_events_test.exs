@@ -41,6 +41,16 @@ defmodule RecurringEventsTest do
     end
   end
 
+  test "will raise an exception if count is invalid" do
+    assert_raise ArgumentError, fn ->
+      RR.take(@date, @valid_rrule, -1)
+    end
+
+    assert_raise ArgumentError, fn ->
+      RR.unfold(@date, %{freq: :yearly, count: -1})
+    end
+  end
+
   test "can handle yearly frequency" do
     events =
       @date
