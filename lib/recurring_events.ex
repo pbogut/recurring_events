@@ -112,10 +112,8 @@ defmodule RecurringEvents do
     date |> unfold(rules) |> Enum.take(count)
   end
 
-  def take(_date, _rules, count) do
-    raise ArgumentError,
-      message: "Expected a non-negative integer for `count`, " <>
-      "got #{count} instead."
+  def take(_date, _rules, _count) do
+    raise ArgumentError, message: "Count must be a non-negative integer."
   end
 
   @doc """
@@ -234,6 +232,9 @@ defmodule RecurringEvents do
       Map.has_key?(rules, :count) and Map.has_key?(rules, :until) ->
         raise ArgumentError, message: "Can have either, count or until"
 
+      !is_count_valid(rules) ->
+        raise ArgumentError, message: "Count must be a non-negative integer."
+
       !is_date(date) ->
         raise ArgumentError, message: "You have to use date or datetime structure"
 
@@ -244,4 +245,9 @@ defmodule RecurringEvents do
         nil
     end
   end
+
+  defp is_count_valid(%{count: nil}), do: true
+  defp is_count_valid(%{count: count}) when count >= 0, do: true
+  defp is_count_valid(%{count: count}) when count < 0, do: false
+  defp is_count_valid(%{}), do: true
 end
