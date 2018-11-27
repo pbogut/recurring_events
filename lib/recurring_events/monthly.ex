@@ -3,7 +3,7 @@ defmodule RecurringEvents.Monthly do
   Handles `:monthly` frequency rule
   """
 
-  alias RecurringEvents.Date
+  @date_helper Application.get_env(:recurring_events, :date_helper_module)
 
   @doc """
   Returns monthly stream of dates with respect to `:interval`, `:count` and
@@ -40,7 +40,7 @@ defmodule RecurringEvents.Monthly do
   end
 
   defp next_iteration(date, step, iteration) do
-    next_date = Date.shift_date(date, step * iteration, :months)
+    next_date = @date_helper.shift_date(date, step * iteration, :months)
     acc = {date, iteration + 1}
     {[next_date], acc}
   end
@@ -48,11 +48,11 @@ defmodule RecurringEvents.Monthly do
   defp until_reached(_date, :forever), do: false
 
   defp until_reached(date, until_date) do
-    Date.compare(date, until_date) == :gt
+    @date_helper.compare(date, until_date) == :gt
   end
 
   defp until_date(%{until: until_date}) do
-    last_day = Date.last_day_of_the_month(until_date)
+    last_day = @date_helper.last_day_of_the_month(until_date)
     %{until_date | day: last_day}
   end
 

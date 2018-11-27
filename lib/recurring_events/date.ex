@@ -119,7 +119,7 @@ defmodule RecurringEvents.Date do
   end
 
   @doc """
-  Returns last daty of the month for provided date.
+  Returns last day of the month for provided date.
 
   # Example
 
@@ -133,6 +133,25 @@ defmodule RecurringEvents.Date do
 
   def last_day_of_the_month({year, month, _day}) do
     :calendar.last_day_of_the_month(year, month)
+  end
+
+  @doc """
+  Returns last day of the year for provided date.
+
+  # Example
+
+      iex> RecurringEvents.Date.last_day_of_the_year(~D[2017-02-04])
+      365
+      iex> RecurringEvents.Date.last_day_of_the_year(~D[2016-02-04])
+      366
+
+  """
+  def last_day_of_the_year(%{year: year}) do
+    if(:calendar.is_leap_year(year), do: 366, else: 365)
+  end
+
+  def last_day_of_the_year({year, _month, _day}) do
+    if(:calendar.is_leap_year(year), do: 366, else: 365)
   end
 
   @doc """
@@ -191,8 +210,7 @@ defmodule RecurringEvents.Date do
 
   def numbered_week_day({year, _month, _day} = date, :year, :backward) do
     day_of_the_week = week_day(date)
-    last_day = if(:calendar.is_leap_year(year), do: 366, else: 365)
-    count = div(last_day - day_of_the_year(date), 7) + 1
+    count = div(last_day_of_the_year(date) - day_of_the_year(date), 7) + 1
     {-count, day_of_the_week}
   end
 

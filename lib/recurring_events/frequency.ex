@@ -3,7 +3,7 @@ defmodule RecurringEvents.Frequency do
   Handles `:frequency` frequency rule
   """
 
-  alias RecurringEvents.Date
+  @date_helper Application.get_env(:recurring_events, :date_helper_module)
 
   @doc """
   Returns frequency stream of dates with respect to `:interval`, `:count` and
@@ -48,7 +48,7 @@ defmodule RecurringEvents.Frequency do
   defp get_step_by(:secondly), do: :seconds
 
   defp next_iteration(date, step, iteration, step_by) do
-    next_date = Date.shift_date(date, step * iteration, step_by)
+    next_date = @date_helper.shift_date(date, step * iteration, step_by)
     acc = {date, iteration + 1}
     {[next_date], acc}
   end
@@ -56,7 +56,7 @@ defmodule RecurringEvents.Frequency do
   defp until_reached(_date, :forever), do: false
 
   defp until_reached(date, until_date) do
-    Date.compare(date, until_date) == :gt
+    @date_helper.compare(date, until_date) == :gt
   end
 
   defp until_date(%{until: until_date}), do: until_date

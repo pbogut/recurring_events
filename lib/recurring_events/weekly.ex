@@ -3,7 +3,7 @@ defmodule RecurringEvents.Weekly do
   Handles `:weekly` frequency rule
   """
 
-  alias RecurringEvents.Date
+  @date_helper Application.get_env(:recurring_events, :date_helper_module)
 
   @doc """
   Returns weekly stream of dates with respect to `:interval`, `:count` and
@@ -41,7 +41,7 @@ defmodule RecurringEvents.Weekly do
   end
 
   defp next_iteration(date, step, iteration) do
-    next_date = Date.shift_date(date, step * iteration, :weeks)
+    next_date = @date_helper.shift_date(date, step * iteration, :weeks)
     acc = {date, iteration + 1}
     {[next_date], acc}
   end
@@ -49,7 +49,7 @@ defmodule RecurringEvents.Weekly do
   defp until_reached(_date, :forever), do: false
 
   defp until_reached(date, until_date) do
-    Date.compare(date, until_date) == :gt
+    @date_helper.compare(date, until_date) == :gt
   end
 
   defp until_date(%{until: until_date} = rules) do
@@ -60,20 +60,20 @@ defmodule RecurringEvents.Weekly do
   defp until_date(%{}), do: :forever
 
   defp week_end_date(date, rules) do
-    current_day = Date.week_day(date)
+    current_day = @date_helper.week_day(date)
     end_day = week_end_day(rules)
 
     if current_day == end_day do
       date
     else
       date
-      |> Date.shift_date(1, :days)
+      |> @date_helper.shift_date(1, :days)
       |> week_end_date(rules)
     end
   end
 
   defp week_end_day(%{week_start: start_day}) do
-    Date.prev_week_day(start_day)
+    @date_helper.prev_week_day(start_day)
   end
 
   defp week_end_day(%{}), do: :sunday

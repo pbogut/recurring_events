@@ -23,7 +23,7 @@ defmodule RecurringEvents.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :tzdata]]
   end
 
   # Dependencies can be Hex packages:
@@ -36,7 +36,11 @@ defmodule RecurringEvents.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:ex_doc, ">= 0.0.0", only: :dev}, {:excoveralls, "~> 0.8", only: :test}]
+    [
+      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:excoveralls, "~> 0.8", only: :test},
+      {:timex, "~> 3.1", optional: true}
+    ]
   end
 
   defp package do

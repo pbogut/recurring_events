@@ -1,6 +1,8 @@
 defmodule RecurringEvents.ByChecker do
-  alias RecurringEvents.{Date, Guards}
+  alias RecurringEvents.Guards
   use Guards
+
+  @date_helper Application.get_env(:recurring_events, :date_helper_module)
 
   @rules [
     :by_month,
@@ -61,12 +63,12 @@ defmodule RecurringEvents.ByChecker do
   end
 
   defp is_year_day(date, number) when number > 0 do
-    Date.day_of_the_year(date) == number
+    @date_helper.day_of_the_year(date) == number
   end
 
   defp is_year_day(%{year: year} = date, number) when number < 0 do
     last_day = if(:calendar.is_leap_year(year), do: 366, else: 365)
-    -(last_day - Date.day_of_the_year(date) + 1) == number
+    -(last_day - @date_helper.day_of_the_year(date) + 1) == number
   end
 
   def is_week_no_in(date, %{by_week_number: numbers, week_start: week_start}) do
@@ -74,11 +76,11 @@ defmodule RecurringEvents.ByChecker do
   end
 
   defp is_week_no_eq(date, number, week_start) when number > 0 do
-    Date.week_number(date, week_start: week_start) == number
+    @date_helper.week_number(date, week_start: week_start) == number
   end
 
   defp is_week_no_eq(date, number, week_start) when number < 0 do
-    Date.week_number(date, reversed: true, week_start: week_start) == number
+    @date_helper.week_number(date, reversed: true, week_start: week_start) == number
   end
 
   defp is_month_day_in(date, %{by_month_day: days}) do
@@ -90,7 +92,7 @@ defmodule RecurringEvents.ByChecker do
   end
 
   defp is_month_day_eq(%{day: date_day} = date, day) when day < 0 do
-    date_day - (Date.last_day_of_the_month(date) + 1) == day
+    date_day - (@date_helper.last_day_of_the_month(date) + 1) == day
   end
 
   defp is_month_in(date, %{by_month: months}) do
@@ -118,15 +120,15 @@ defmodule RecurringEvents.ByChecker do
   end
 
   defp is_week_day_eq(date, week_day) do
-    Date.week_day(date) == week_day
+    @date_helper.week_day(date) == week_day
   end
 
   defp is_week_day_eq(date, {n, _} = week_day, period) when n < 0 do
-    Date.numbered_week_day(date, period, :backward) == week_day
+    @date_helper.numbered_week_day(date, period, :backward) == week_day
   end
 
   defp is_week_day_eq(date, {n, _} = week_day, period) when n > 0 do
-    Date.numbered_week_day(date, period, :foreward) == week_day
+    @date_helper.numbered_week_day(date, period, :foreward) == week_day
   end
 
   defp is_week_day_eq(date, week_day, _period) when is_atom(week_day) do
