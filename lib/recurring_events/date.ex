@@ -17,6 +17,11 @@ defmodule RecurringEvents.Date do
   @doc """
   Shifts date by `:days`, `:weeks`, `:months` and `:years`
 
+  Optional param `opts` accepts the following options:
+
+    - `:return_invalid` - set to `true` to return the invalid dates as is, 
+      `false` to return the last day of the month instead, default value is `false`
+
   # Example
 
       iex> RecurringEvents.Date.shift_date(~D[2011-02-04], 4, :days)
@@ -25,13 +30,18 @@ defmodule RecurringEvents.Date do
       iex> RecurringEvents.Date.shift_date(~D[2011-02-04], 2, :years)
       ~D[2013-02-04]
 
+      iex> RecurringEvents.Date.shift_date(~D[2011-10-31], 1, :months, return_invalid: true)
+      %Date{year: 2011, month: 11, day: 31}
+
   """
-  def shift_date(date, count, period)
+  def shift_date(date, count, period, opts \\ [])
+
+  def shift_date(date, count, period, opts)
       when period == :hours or period == :minutes or period == :seconds do
     {
       {new_year, new_month, new_day},
       {new_hour, new_minute, new_second}
-    } = shift_time(date, count, period)
+    } = shift_time(date, count, period, opts)
 
     %{
       date
@@ -44,37 +54,42 @@ defmodule RecurringEvents.Date do
     }
   end
 
-  def shift_date(%{year: year, month: month, day: day} = date, count, period) do
-    {new_year, new_month, new_day} = shift_date({year, month, day}, count, period)
+  def shift_date(%{year: year, month: month, day: day} = date, count, period, opts) do
+    {new_year, new_month, new_day} = shift_date({year, month, day}, count, period, opts)
     %{date | year: new_year, month: new_month, day: new_day}
   end
 
-  def shift_date(date, 0, _), do: date
+  def shift_date(date, 0, _, _), do: date
 
-  def shift_date({_year, _month, _day} = date, count, :days) do
+  def shift_date({_year, _month, _day} = date, count, :days, _opts) do
     date
     |> :calendar.date_to_gregorian_days()
     |> Kernel.+(count)
     |> :calendar.gregorian_days_to_date()
   end
 
-  def shift_date({_year, _month, _day} = date, count, :weeks) do
-    shift_date(date, count * 7, :days)
+  def shift_date({_year, _month, _day} = date, count, :weeks, opts) do
+    shift_date(date, count * 7, :days, opts)
   end
 
-  def shift_date({year, month, day}, count, :months) do
+  def shift_date({year, month, day}, count, :months, opts) do
     months = year * 12 + (month - 1) + count
 
     new_year = div(months, 12)
     new_month = rem(months, 12) + 1
 
-    last_day = :calendar.last_day_of_the_month(new_year, new_month)
-    new_day = min(day, last_day)
+    IO.inspect opts
+    if opts[:return_invalid] do
+      {new_year, new_month, day}
+    else
+      last_day = :calendar.last_day_of_the_month(new_year, new_month)
+      new_day = min(day, last_day)
 
-    {new_year, new_month, new_day}
+      {new_year, new_month, new_day}
+    end
   end
 
-  def shift_date({year, month, day}, count, :years) do
+  def shift_date({year, month, day}, count, :years, _opts) do
     new_year = year + count
     last_day = :calendar.last_day_of_the_month(new_year, month)
     new_day = min(day, last_day)
@@ -82,7 +97,7 @@ defmodule RecurringEvents.Date do
     {new_year, month, new_day}
   end
 
-  # defp shift_time(%{hour: hour, minute: minute, second: second} = date, count, period) do
+  # defp shift_time(%{hour: hour, minute: minute, second: second} = date, count, period, opts) do
   # {new_hour, new_minute, new_second} = shift_date({hour, minute, second}, count, period)
   # %{date | hour: new_hour, minute: new_minute, second: new_second}
   # end
@@ -90,31 +105,32 @@ defmodule RecurringEvents.Date do
   defp shift_time(
          %{year: _, month: _, day: _, hour: _, minute: _, second: _} = date,
          count,
-         period
+         period,
+         opts
        ) do
-    shift_time(to_erl_datetime(date), count, period)
+    shift_time(to_erl_datetime(date), count, period, opts)
   end
 
-  defp shift_time(datetime, 0, _), do: datetime
+  defp shift_time(datetime, 0, _, _), do: datetime
 
-  defp shift_time({date, {hour, minute, second}}, count, :hours) do
+  defp shift_time({date, {hour, minute, second}}, count, :hours, opts) do
     days = div(hour + count, 24)
     new_hour = rem(hour + count, 24)
 
-    {shift_date(date, days, :days), {new_hour, minute, second}}
+    {shift_date(date, days, :days, opts), {new_hour, minute, second}}
   end
 
-  defp shift_time({date, {_, minute, second} = time}, count, :minutes) do
+  defp shift_time({date, {_, minute, second} = time}, count, :minutes, opts) do
     hours = div(minute + count, 60)
     new_minute = rem(minute + count, 60)
-    {new_date, {new_hour, _, _}} = shift_time({date, time}, hours, :hours)
+    {new_date, {new_hour, _, _}} = shift_time({date, time}, hours, :hours, opts)
     {new_date, {new_hour, new_minute, second}}
   end
 
-  defp shift_time({date, {_, _, second} = time}, count, :seconds) do
+  defp shift_time({date, {_, _, second} = time}, count, :seconds, opts) do
     minutes = div(second + count, 60)
     new_second = rem(second + count, 60)
-    {new_date, {new_hour, new_minute, _}} = shift_time({date, time}, minutes, :minutes)
+    {new_date, {new_hour, new_minute, _}} = shift_time({date, time}, minutes, :minutes, opts)
     {new_date, {new_hour, new_minute, new_second}}
   end
 
