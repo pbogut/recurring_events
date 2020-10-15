@@ -78,7 +78,6 @@ defmodule RecurringEvents.Date do
     new_year = div(months, 12)
     new_month = rem(months, 12) + 1
 
-    IO.inspect opts
     if opts[:return_invalid] do
       {new_year, new_month, day}
     else
