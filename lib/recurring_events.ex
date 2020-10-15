@@ -38,6 +38,11 @@ defmodule RecurringEvents do
       date withing frequency period
     - `:exclude_date` - dates to be excluded from the result
     - `:until` - limit result up to provided date
+    - `:invalid` - the way to handle invalid dates, `:fallback` by default. 
+      Options are:
+      - `:fallback` - falls back invalid dates to the last day of the month
+      - `:return` - returns the invalid date anyway
+      - `:skip` - skip the invalid date whatsoever
 
   For more usage examples, please, refer to
   [tests](https://github.com/pbogut/recurring_events/blob/master/test/ical_rrul_test.exs)
@@ -138,6 +143,19 @@ defmodule RecurringEvents do
     |> prepend(date)
     |> drop_exclude(rules)
     |> drop_after(rules)
+    |> drop_invalid(rules)
+  end
+
+  defp drop_invalid(dates, %{invalid: :skip}) do 
+    dates |> Stream.filter(&valid_date?/1)
+  end
+
+  defp drop_invalid(dates, _rules) do 
+    dates
+  end
+
+  defp valid_date?(date) do
+    Elixir.Date.new(date.year, date.month, date.day) != {:error, :invalid_date}
   end
 
   defp drop_exclude(dates, %{exclude_date: excludes}) do

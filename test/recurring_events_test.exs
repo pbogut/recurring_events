@@ -93,4 +93,37 @@ defmodule RecurringEventsTest do
     assert is_list(list)
     assert list == Enum.take(stream, 29)
   end
+
+  test "can optionally return invalid dates" do
+    date = ~D[2020-10-31]
+
+    events =
+      date 
+      |> RR.unfold(%{freq: :monthly, invalid: :return})
+      |> Enum.take(2)
+    
+    assert events == [date, %{date | month: 11, day: 31}]
+  end
+
+  test "can optionally skip invalid dates" do
+    date = ~D[2020-10-31]
+
+    events =
+      date 
+      |> RR.unfold(%{freq: :monthly, invalid: :skip})
+      |> Enum.take(2)
+    
+    assert events == [date, %{date | month: 12, day: 31}]
+  end
+
+  test "can optionally skip invalid dates and respect count" do
+    date = ~D[2020-10-31]
+
+    events =
+      date 
+      |> RR.unfold(%{freq: :monthly, invalid: :skip, count: 3})
+      |> Enum.take(99)
+    
+    assert events == [date, %{date | month: 12, day: 31}]
+  end
 end

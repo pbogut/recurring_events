@@ -27,7 +27,8 @@ defmodule RecurringEvents.Monthly do
     Stream.resource(
       fn -> {date, 0} end,
       fn {date, iteration} ->
-        {[next_date], _} = next_result = next_iteration(date, step, iteration)
+        return_invalid = Map.get(rules, :invalid, :fallback) != :fallback
+        {[next_date], _} = next_result = next_iteration(date, step, iteration, return_invalid)
 
         cond do
           iteration == count -> {:halt, nil}
@@ -39,8 +40,8 @@ defmodule RecurringEvents.Monthly do
     )
   end
 
-  defp next_iteration(date, step, iteration) do
-    next_date = Date.shift_date(date, step * iteration, :months)
+  defp next_iteration(date, step, iteration, return_invalid) do
+    next_date = Date.shift_date( date, step * iteration, :months, return_invalid: return_invalid)
     acc = {date, iteration + 1}
     {[next_date], acc}
   end
