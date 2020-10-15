@@ -3,8 +3,12 @@ language: elixir
 elixir:
   - 1.6
   - 1.7
+  - 1.9
 
 env:
   - MIX_ENV=test
 
-script: mix coveralls.travis
+script:
+ - if [ "$TRAVIS_ELIXIR_VERSION" == "1.6" ]; then mix coveralls.travis; fi
+ - if [ "$TRAVIS_ELIXIR_VERSION" == "1.7" ]; then mix coveralls.travis; fi
+ - if [ "$TRAVIS_ELIXIR_VERSION" == "1.9" ]; then mix test; fi
