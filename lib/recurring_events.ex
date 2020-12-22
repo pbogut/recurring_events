@@ -158,8 +158,19 @@ defmodule RecurringEvents do
     Elixir.Date.new(date.year, date.month, date.day) != {:error, :invalid_date}
   end
 
-  defp drop_exclude(dates, %{exclude_date: excludes}) do
-    dates |> Stream.filter(&(&1 not in excludes))
+  defp drop_exclude(dates, %{exclude_date: [%Elixir.Date{} | _] = excludes}) do
+    dates
+    |> Stream.filter(&(&1 not in excludes))
+  end
+
+  defp drop_exclude(dates, %{exclude_date: [%NaiveDateTime{} | _] = excludes}) do
+    dates
+    |> Stream.filter(&(&1 not in excludes))
+  end
+
+  defp drop_exclude(dates, %{exclude_date: [date_range]}) do
+    dates
+    |> Stream.reject(&Enum.any?(date_range, fn ex -> Date.compare(ex, &1) == :eq end))
   end
 
   defp drop_exclude(dates, _) do
